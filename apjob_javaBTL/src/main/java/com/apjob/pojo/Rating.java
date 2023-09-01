@@ -97,7 +97,7 @@ public class Rating implements Serializable{
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (getId() != null ? getId().hashCode() : 0);
         return hash;
     }
 
@@ -108,7 +108,7 @@ public class Rating implements Serializable{
             return false;
         }
         Rating other = (Rating) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.getId() == null && other.getId() != null) || (this.getId() != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -116,7 +116,21 @@ public class Rating implements Serializable{
 
     @Override
     public String toString() {
-        return "com.apjob.pojo.Rating[ id=" + id + " ]";
+        return "com.apjob.pojo.Rating[ id=" + getId() + " ]";
+    }
+
+    /**
+     * @return the id
+     */
+    public Integer getId() {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(Integer id) {
+        this.id = id;
     }
 
    

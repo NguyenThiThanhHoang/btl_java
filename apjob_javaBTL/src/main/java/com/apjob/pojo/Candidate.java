@@ -59,7 +59,7 @@ public class Candidate implements Serializable{
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id", referencedColumnName = "id")
-    private User userId;
+    private User user;
     
     
     @ManyToOne(cascade = CascadeType.ALL)
@@ -150,15 +150,15 @@ public class Candidate implements Serializable{
     /**
      * @return the userId
      */
-    public User getUserId() {
-        return userId;
+    public User getUser() {
+        return user;
     }
 
     /**
-     * @param userId the userId to set
+     * @param user the userId to set
      */
-    public void setUserId(User userId) {
-        this.userId = userId;
+    public void setUser(User user) {
+        this.user = user;
     }
 
 

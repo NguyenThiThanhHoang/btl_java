@@ -30,7 +30,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Table(name = "cv")
 @NamedQueries({
     @NamedQuery(name = "CV.findAll", query = "SELECT c FROM CV c"),
-    @NamedQuery(name = "CV.findById", query = "SELECT c FROM CV c WHERE c.id = :id")})
+    @NamedQuery(name = "CV.findById", query = "SELECT c FROM CV c WHERE c.id = :id"),
+    @NamedQuery(name = "CV.findById", query = "SELECT c FROM CV c WHERE c.nameCV = :nameCV")})
 public class CV implements Serializable{
 
    
@@ -40,6 +41,9 @@ public class CV implements Serializable{
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
+    @Basic(optional = false)
+    @Column(name = "name_cv")
+    private String nameCV;
     @Transient
     private MultipartFile file;
     
@@ -125,6 +129,20 @@ public class CV implements Serializable{
     @Override
     public String toString() {
         return "com.apjob.pojo.CV[ id=" + id + " ]";
+    }
+
+    /**
+     * @return the nameCV
+     */
+    public String getNameCV() {
+        return nameCV;
+    }
+
+    /**
+     * @param nameCV the nameCV to set
+     */
+    public void setNameCV(String nameCV) {
+        this.nameCV = nameCV;
     }
 
   
