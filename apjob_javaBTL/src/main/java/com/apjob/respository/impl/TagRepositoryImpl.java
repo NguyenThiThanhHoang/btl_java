@@ -35,38 +35,38 @@ public class TagRepositoryImpl implements TagRepository{
     @Autowired
     private Environment env;
     
-    @Override
-    public List<Tag> getTags(Map<String, String> params) {
-        Session s = this.factoryBean.getObject().getCurrentSession();
-        CriteriaBuilder b = s.getCriteriaBuilder();
-        CriteriaQuery<Tag> q = b.createQuery(Tag.class);
-        Root root = q.from(Tag.class);
-        q.select(root);
-
-        if (params != null) {
-           
-            String kw = params.get("kw");
-            if (kw != null && !kw.isEmpty()) {
-                q.where(b.like(root.get("tag_name"), String.format("%%%s%%", kw)));
-            }
-            
-        }
-
-        q.orderBy(b.desc(root.get("id")));
-
-        Query query = s.createQuery(q);
-
-        if (params != null) {
-            String page = params.get("page");
-            if (page != null) {
-                int pageSize = Integer.parseInt(this.env.getProperty("PAGE_SIZE_SMALL_ITEM"));
-                query.setFirstResult((Integer.parseInt(page) - 1) * pageSize);
-                query.setMaxResults(pageSize);
-            }
-        }
-
-        return query.getResultList();
-    }
+//    @Override
+//    public List<Tag> getTags(Map<String, String> params) {
+//        Session s = this.factoryBean.getObject().getCurrentSession();
+//        CriteriaBuilder b = s.getCriteriaBuilder();
+//        CriteriaQuery<Tag> q = b.createQuery(Tag.class);
+//        Root root = q.from(Tag.class);
+//        q.select(root);
+//
+//        if (params != null) {
+//           
+//            String kw = params.get("kw");
+//            if (kw != null && !kw.isEmpty()) {
+//                q.where(b.like(root.get("tag_name"), String.format("%%%s%%", kw)));
+//            }
+//            
+//        }
+//
+//        q.orderBy(b.desc(root.get("id")));
+//
+//        Query query = s.createQuery(q);
+//
+//        if (params != null) {
+//            String page = params.get("page");
+//            if (page != null) {
+//                int pageSize = Integer.parseInt(this.env.getProperty("PAGE_SIZE_SMALL_ITEM"));
+//                query.setFirstResult((Integer.parseInt(page) - 1) * pageSize);
+//                query.setMaxResults(pageSize);
+//            }
+//        }
+//
+//        return query.getResultList();
+//    }
 
     @Override
     public int countTags() {
@@ -110,6 +110,13 @@ public class TagRepositoryImpl implements TagRepository{
             ex.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public List<Tag> getTags() {
+        Session s = this.factoryBean.getObject().getCurrentSession();
+        Query q = s.createQuery("From Tag");
+        return q.getResultList();
     }
     
 }

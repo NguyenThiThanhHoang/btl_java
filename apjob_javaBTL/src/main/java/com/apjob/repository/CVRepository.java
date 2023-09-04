@@ -15,7 +15,7 @@ import java.util.Map;
 public interface CVRepository {
     List<CV> getCVs(Map<String, String> params);
     int countCVs();
-    boolean addOrUpdateTag(CV c);
+    boolean addOrUpdateCV(CV c);
     CV getCVById(int id);
     boolean deleteCV(int id);
 }

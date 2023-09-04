@@ -52,12 +52,12 @@ public class RatingRepositoryImpl implements RatingRepository{
 
             List<Predicate> predicates = new ArrayList<>();
 
-            if (candidateId != null && candidateId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("candidate").get("id"), "=" + candidateId));
+            if (candidateId != null && !candidateId.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("candidate_id"), "=" + candidateId));
             }
 
-            if (companyId != null && companyId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("company").get("id"), "=" + companyId));
+            if (companyId != null && !companyId.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("company_id"), "=" + companyId));
             }
 
             if (!predicates.isEmpty()) {

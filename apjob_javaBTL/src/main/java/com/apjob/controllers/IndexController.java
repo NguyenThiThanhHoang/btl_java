@@ -4,13 +4,11 @@
  */
 package com.apjob.controllers;
 
-import javax.persistence.Query;
-import org.hibernate.Session;
+import com.apjob.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -18,18 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author ASUS
  */
 @Controller
+@ControllerAdvice
 public class IndexController {
     
     @Autowired
-    private LocalSessionFactoryBean factoryBean;
+    private TagService tagService;
     
     @RequestMapping("/")
-    @Transactional
     public String index(Model model){
-        Session s = this.factoryBean.getObject().getCurrentSession();
-        Query q = s.createQuery("From Tag");
-        
-        model.addAttribute("tags", q.getResultList());
+        model.addAttribute("tags", this.tagService.getTags());
         
         return "index";
     }

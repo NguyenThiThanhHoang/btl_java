@@ -31,7 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @NamedQueries({
     @NamedQuery(name = "CV.findAll", query = "SELECT c FROM CV c"),
     @NamedQuery(name = "CV.findById", query = "SELECT c FROM CV c WHERE c.id = :id"),
-    @NamedQuery(name = "CV.findById", query = "SELECT c FROM CV c WHERE c.nameCV = :nameCV")})
+    @NamedQuery(name = "CV.findByName", query = "SELECT c FROM CV c WHERE c.nameCV = :nameCV")})
 public class CV implements Serializable{
 
    

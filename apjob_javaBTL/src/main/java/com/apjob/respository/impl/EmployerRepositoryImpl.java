@@ -64,11 +64,11 @@ public class EmployerRepositoryImpl implements EmployerRepository{
 
             List<Predicate> predicates = new ArrayList<>();
 
-            if (email != null && email.isEmpty()) {
+            if (email != null && !email.isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("user").get("email"), "%" + email + "%"));
             }
 
-            if (name != null && name.isEmpty()) {
+            if (name != null && !name.isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("user").get("name"), "%" + name + "%"));
             }
 

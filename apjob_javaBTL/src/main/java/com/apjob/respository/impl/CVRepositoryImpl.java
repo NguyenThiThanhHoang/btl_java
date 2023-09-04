@@ -5,7 +5,6 @@
 package com.apjob.respository.impl;
 
 import com.apjob.pojo.CV;
-import com.apjob.pojo.Candidate;
 import com.apjob.pojo.Rating;
 import com.apjob.repository.CVRepository;
 import java.util.ArrayList;
@@ -32,7 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 @PropertySource("classpath:configs.properties")
-public class CVRepositoryImpl implements CVRepository{
+public class CVRepositoryImpl implements CVRepository {
+
     @Autowired
     private LocalSessionFactoryBean factoryBean;
     @Autowired
@@ -40,37 +40,30 @@ public class CVRepositoryImpl implements CVRepository{
 
     @Override
     public List<CV> getCVs(Map<String, String> params) {
-         Query query = null;
-        try {
+        Session session = this.factoryBean.getObject().getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Rating> criteriaQuery = criteriaBuilder.createQuery(Rating.class);
+        Root root = criteriaQuery.from(Rating.class);
+        criteriaQuery.select(root);
+
+        if (params != null) {
+            List<Predicate> predicates = new ArrayList<>();
             String candidateId = params.get("candidateId");
             String nameCV = params.get("nameCV");
-            
-            
-            Session session = this.factoryBean.getObject().getCurrentSession();
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Rating> criteriaQuery = criteriaBuilder.createQuery(Rating.class);
-            Root root = criteriaQuery.from(Rating.class);
-            criteriaQuery.select(root);
 
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (candidateId != null && candidateId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("candidate").get("id"), "=" + candidateId));
+            if (candidateId != null && !candidateId.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("candidate_id"), "=" + candidateId));
             }
 
-            if (nameCV != null && nameCV.isEmpty()) {
+            if (nameCV != null && !nameCV.isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("name_cv"), String.format("%%%s%%", nameCV)));
             }
 
-            if (!predicates.isEmpty()) {
-                criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-            }
-
-            criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
-            query = session.createQuery(criteriaQuery);
-        } catch (Exception e) {
-            e.printStackTrace();
+            criteriaQuery.where(predicates.toArray(new Predicate[0]));
         }
+
+        criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
+        Query query = session.createQuery(criteriaQuery);
 
         if (params != null) {
             String page = params.get("page");
@@ -80,7 +73,7 @@ public class CVRepositoryImpl implements CVRepository{
                 query.setMaxResults(pageSize);
             }
         }
-        
+
         return query.getResultList();
     }
 
@@ -93,7 +86,7 @@ public class CVRepositoryImpl implements CVRepository{
     }
 
     @Override
-    public boolean addOrUpdateTag(CV c) {
+    public boolean addOrUpdateCV(CV c) {
         Session s = this.factoryBean.getObject().getCurrentSession();
         try {
             if (c.getId() == null) {

@@ -4,10 +4,19 @@
  */
 package com.apjob.repository;
 
+import com.apjob.pojo.CandidateRecruitment;
+import java.util.List;
+import java.util.Map;
+
 /**
  *
  * @author ASUS
  */
 public interface CandidateRecruitmentRepository {
+    List<CandidateRecruitment> getCandidateRecruitments(Map<String, String> params);
+    int countCandidateRecruitments(Map<String, String> params);
+    boolean addCandidateRecruitment(CandidateRecruitment c);
+    List<CandidateRecruitment> getCandidateRecruitmentById(int id); //get recuitmentID
+    boolean deleteCandidateRecruitmentById(int id); //get recuitmentID
     
 }
