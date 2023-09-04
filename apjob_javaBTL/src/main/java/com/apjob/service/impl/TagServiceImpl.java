@@ -11,18 +11,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 /**
  *
  * @author ASUS
  */
 @Service
 public class TagServiceImpl implements TagService{
+
     @Autowired
-    private TagRepository tagRepo;
-
-
+    private TagRepository tagRepository;
+    
     @Override
     public List<Tag> getTags() {
-        return this.tagRepo.getTags();
+        return this.tagRepository.getTags();
     }
+    
 }

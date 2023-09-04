@@ -2,11 +2,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.apjob.respository.impl;
+package com.apjob.repository.impl;
 
 import com.apjob.pojo.CV;
-import com.apjob.pojo.Rating;
-import com.apjob.repository.CVRepository;
+import com.apjob.pojo.Company;
+import com.apjob.repository.CompanyRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,39 +31,35 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 @PropertySource("classpath:configs.properties")
-public class CVRepositoryImpl implements CVRepository {
-
+public class CompanyRepositoryImpl implements CompanyRepository{
     @Autowired
     private LocalSessionFactoryBean factoryBean;
     @Autowired
     private Environment env;
 
     @Override
-    public List<CV> getCVs(Map<String, String> params) {
-        Session session = this.factoryBean.getObject().getCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<Rating> criteriaQuery = criteriaBuilder.createQuery(Rating.class);
-        Root root = criteriaQuery.from(Rating.class);
-        criteriaQuery.select(root);
+    public List<Company> getCompanys(Map<String, String> params) {
+        Session s = this.factoryBean.getObject().getCurrentSession();
+        CriteriaBuilder b = s.getCriteriaBuilder();
+        CriteriaQuery<Company> q = b.createQuery(Company.class);
+        Root root = q.from(Company.class);
+        q.select(root);
 
         if (params != null) {
             List<Predicate> predicates = new ArrayList<>();
-            String candidateId = params.get("candidateId");
-            String nameCV = params.get("nameCV");
 
-            if (candidateId != null && !candidateId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("candidate_id"), "=" + candidateId));
+            String kw = params.get("kw");
+            if (kw != null && !kw.isEmpty()) {
+                predicates.add(b.like(root.get("name"), String.format("%%%s%%", kw)));
             }
 
-            if (nameCV != null && !nameCV.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("name_cv"), String.format("%%%s%%", nameCV)));
-            }
 
-            criteriaQuery.where(predicates.toArray(new Predicate[0]));
+            q.where(predicates.toArray(new Predicate[0]));
         }
 
-        criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
-        Query query = session.createQuery(criteriaQuery);
+        q.orderBy(b.desc(root.get("id")));
+
+        Query query = s.createQuery(q);
 
         if (params != null) {
             String page = params.get("page");
@@ -75,18 +71,19 @@ public class CVRepositoryImpl implements CVRepository {
         }
 
         return query.getResultList();
+
     }
 
     @Override
-    public int countCVs() {
+    public int countCompanys() {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        Query q = s.createQuery("SELECT COUNT(*) FROM CV");
+        Query q = s.createQuery("SELECT COUNT(*) FROM Company");
 
         return Integer.parseInt(q.getSingleResult().toString());
     }
 
     @Override
-    public boolean addOrUpdateCV(CV c) {
+    public boolean addOrUpdateCompany(Company c) {
         Session s = this.factoryBean.getObject().getCurrentSession();
         try {
             if (c.getId() == null) {
@@ -103,15 +100,15 @@ public class CVRepositoryImpl implements CVRepository {
     }
 
     @Override
-    public CV getCVById(int id) {
+    public Company getCompanyById(int id) {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        return s.get(CV.class, id);
+        return s.get(Company.class, id);
     }
 
     @Override
-    public boolean deleteCV(int id) {
+    public boolean deleteCompany(int id) {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        CV c = this.getCVById(id);
+        Company c = this.getCompanyById(id);
         try {
             s.delete(c);
             return true;

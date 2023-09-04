@@ -2,16 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.apjob.respository.impl;
+package com.apjob.repository.impl;
 
-import com.apjob.pojo.Location;
-import com.apjob.pojo.Tag;
-import com.apjob.repository.LocationRepository;
+import com.apjob.pojo.CV;
+import com.apjob.pojo.Rating;
+import com.apjob.repository.CVRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -29,62 +31,68 @@ import org.springframework.transaction.annotation.Transactional;
 @Repository
 @Transactional
 @PropertySource("classpath:configs.properties")
-public class LocationRepositoryImpl implements LocationRepository{
+public class CVRepositoryImpl implements CVRepository {
 
     @Autowired
     private LocalSessionFactoryBean factoryBean;
     @Autowired
     private Environment env;
-    
+
     @Override
-    public List<Location> getLocations(Map<String, String> params) {
-       Session s = this.factoryBean.getObject().getCurrentSession();
-        CriteriaBuilder b = s.getCriteriaBuilder();
-        CriteriaQuery<Location> q = b.createQuery(Location.class);
-        Root root = q.from(Location.class);
-        q.select(root);
+    public List<CV> getCVs(Map<String, String> params) {
+        Session session = this.factoryBean.getObject().getCurrentSession();
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<Rating> criteriaQuery = criteriaBuilder.createQuery(Rating.class);
+        Root root = criteriaQuery.from(Rating.class);
+        criteriaQuery.select(root);
 
         if (params != null) {
-           
-            String kw = params.get("kw");
-            if (kw != null && !kw.isEmpty()) {
-                q.where(b.like(root.get("location_name"), String.format("%%%s%%", kw)));
+            List<Predicate> predicates = new ArrayList<>();
+            String candidateId = params.get("candidateId");
+            String nameCV = params.get("nameCV");
+
+            if (candidateId != null && !candidateId.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("candidate_id"), "=" + candidateId));
             }
-            
+
+            if (nameCV != null && !nameCV.isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("name_cv"), String.format("%%%s%%", nameCV)));
+            }
+
+            criteriaQuery.where(predicates.toArray(new Predicate[0]));
         }
 
-        q.orderBy(b.desc(root.get("id")));
-
-        Query query = s.createQuery(q);
+        criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
+        Query query = session.createQuery(criteriaQuery);
 
         if (params != null) {
             String page = params.get("page");
             if (page != null) {
-                int pageSize = Integer.parseInt(this.env.getProperty("PAGE_SIZE_SMALL_ITEM"));
+                int pageSize = Integer.parseInt(this.env.getProperty("PAGE_SIZE_LARGE_ITEM"));
                 query.setFirstResult((Integer.parseInt(page) - 1) * pageSize);
                 query.setMaxResults(pageSize);
             }
         }
 
-        return query.getResultList(); 
+        return query.getResultList();
     }
 
     @Override
-    public int countLocations() {
+    public int countCVs() {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        Query q = s.createQuery("SELECT COUNT(*) FROM Location");
-        
+        Query q = s.createQuery("SELECT COUNT(*) FROM CV");
+
         return Integer.parseInt(q.getSingleResult().toString());
     }
 
     @Override
-    public boolean addOrUpdateLocation(Location l) {
+    public boolean addOrUpdateCV(CV c) {
         Session s = this.factoryBean.getObject().getCurrentSession();
         try {
-            if (l.getId() == null) {
-                s.save(l);
+            if (c.getId() == null) {
+                s.save(c);
             } else {
-                s.update(l);
+                s.update(c);
             }
 
             return true;
@@ -95,22 +103,21 @@ public class LocationRepositoryImpl implements LocationRepository{
     }
 
     @Override
-    public Location getLocationById(int id) {
+    public CV getCVById(int id) {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        return s.get(Location.class, id);
+        return s.get(CV.class, id);
     }
 
     @Override
-    public boolean deleteLocation(int id) {
+    public boolean deleteCV(int id) {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        Location l = this.getLocationById(id);
+        CV c = this.getCVById(id);
         try {
-            s.delete(l);
+            s.delete(c);
             return true;
         } catch (HibernateException ex) {
             ex.printStackTrace();
             return false;
         }
     }
-    
 }

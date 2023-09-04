@@ -2,14 +2,15 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.apjob.respository.impl;
+package com.apjob.repository.impl;
 
-import com.apjob.pojo.CV;
-import com.apjob.pojo.Company;
-import com.apjob.repository.CompanyRepository;
+import com.apjob.pojo.Candidate;
+import com.apjob.repository.CandidateRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -28,38 +29,57 @@ import org.springframework.transaction.annotation.Transactional;
  *
  * @author ASUS
  */
-@Repository
 @Transactional
 @PropertySource("classpath:configs.properties")
-public class CompanyRepositoryImpl implements CompanyRepository{
+@Repository
+public class CandidateRepositoryImpl implements CandidateRepository{
+    
     @Autowired
     private LocalSessionFactoryBean factoryBean;
     @Autowired
     private Environment env;
 
     @Override
-    public List<Company> getCompanys(Map<String, String> params) {
-        Session s = this.factoryBean.getObject().getCurrentSession();
-        CriteriaBuilder b = s.getCriteriaBuilder();
-        CriteriaQuery<Company> q = b.createQuery(Company.class);
-        Root root = q.from(Company.class);
-        q.select(root);
+    public List<Candidate> getCandidates(Map<String, String> params) {
+        Query query = null;
+        try {
+            String kw = params.get("kw");
+            String email = null;
+            String name = null;
+            
+            //dùng regex kiểm tra chuỗi truyền vào có phải email không -> email thì gán -> ngược lại là name
+            String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+            Pattern pattern = Pattern.compile(emailRegex);
+            Matcher matcher = pattern.matcher(kw);
+            if (matcher.matches()){
+                email = kw;
+            }else{ name = kw; }
+            
+            Session session = this.factoryBean.getObject().getCurrentSession();
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaQuery<Candidate> criteriaQuery = criteriaBuilder.createQuery(Candidate.class);
+            Root root = criteriaQuery.from(Candidate.class);
+            criteriaQuery.select(root);
 
-        if (params != null) {
             List<Predicate> predicates = new ArrayList<>();
 
-            String kw = params.get("kw");
-            if (kw != null && !kw.isEmpty()) {
-                predicates.add(b.like(root.get("name"), String.format("%%%s%%", kw)));
+            if (email != null && !email.isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("user").get("email"), "%" + email + "%"));
             }
 
+            if (name != null && !name.isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("user").get("name"), "%" + name + "%"));
+            }
 
-            q.where(predicates.toArray(new Predicate[0]));
+            if (!predicates.isEmpty()) {
+                criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+            }
+
+            criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
+            query = session.createQuery(criteriaQuery);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-
-        q.orderBy(b.desc(root.get("id")));
-
-        Query query = s.createQuery(q);
 
         if (params != null) {
             String page = params.get("page");
@@ -69,21 +89,21 @@ public class CompanyRepositoryImpl implements CompanyRepository{
                 query.setMaxResults(pageSize);
             }
         }
-
+        
         return query.getResultList();
-
+        
     }
 
     @Override
-    public int countCompanys() {
+    public int countCandidates() {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        Query q = s.createQuery("SELECT COUNT(*) FROM Company");
+        Query q = s.createQuery("SELECT COUNT(*) FROM Candidate");
 
         return Integer.parseInt(q.getSingleResult().toString());
     }
 
     @Override
-    public boolean addOrUpdateCompany(Company c) {
+    public boolean addOrUpdateCandidate(Candidate c) {
         Session s = this.factoryBean.getObject().getCurrentSession();
         try {
             if (c.getId() == null) {
@@ -100,15 +120,15 @@ public class CompanyRepositoryImpl implements CompanyRepository{
     }
 
     @Override
-    public Company getCompanyById(int id) {
+    public Candidate getCandidateById(int id) {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        return s.get(Company.class, id);
+        return s.get(Candidate.class, id);
     }
 
     @Override
-    public boolean deleteCompany(int id) {
+    public boolean deleteCandidate(int id) {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        Company c = this.getCompanyById(id);
+        Candidate c = this.getCandidateById(id);
         try {
             s.delete(c);
             return true;
@@ -117,4 +137,5 @@ public class CompanyRepositoryImpl implements CompanyRepository{
             return false;
         }
     }
+    
 }

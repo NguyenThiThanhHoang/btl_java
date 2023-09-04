@@ -21,7 +21,11 @@ import org.springframework.web.servlet.view.JstlView;
 @Configuration
 @EnableWebMvc
 @EnableTransactionManagement
-@ComponentScan(basePackages = "com.apjob.controllers")
+@ComponentScan({
+    "com.apjob.controllers",
+    "com.apjob.repository",
+    "com.apjob.service"
+})
 public class WebAppContextConfig implements WebMvcConfigurer {
 
     @Override

@@ -6,6 +6,7 @@ package com.apjob.controllers;
 
 import com.apjob.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author ASUS
  */
 @Controller
-@ControllerAdvice
 public class IndexController {
     
     @Autowired
