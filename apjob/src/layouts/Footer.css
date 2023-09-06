@@ -1,0 +1,58 @@
+.footer {
+    color: #83ffff;
+    height: 140px;
+}
+
+.navbar-brand {
+    background-color: #212529;
+    margin-top: 5px;
+    margin-bottom: -5px;
+}
+
+.text {
+    color: #212529;
+    text-transform: capitalize;
+    font-size: 30px;
+    background: linear-gradient(-90deg, #ffb759, #ff4e83, #4fbfff, #41ffc6);
+    background-size: 40% 50%;
+    -webkit-background-clip: text;
+    -webkit-text-stroke: 8px transparent;
+}
+
+.h1 {
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.h5, h5 {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.col-4 {
+    font-size: medium;
+    margin-top: 5px;
+}
+
+.col-8 {
+    font-size: larger;
+    padding-bottom: 5px;
+}
+
+.p, p {
+    font-family: 'Times New Roman', Times, serif;
+    margin-bottom: 0;
+}
+
+.footer-icons {
+    padding-right: 20px;
+    margin-bottom: 10px;
+}
+
+.img {
+    padding-right: 0%;
+    padding-top: 5px;
+}
+
+.info {
+    margin-bottom: 5px;
+}
