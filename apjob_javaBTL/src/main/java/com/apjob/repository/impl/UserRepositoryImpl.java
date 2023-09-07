@@ -6,6 +6,7 @@ package com.apjob.repository.impl;
 
 import com.apjob.pojo.User;
 import com.apjob.repository.UserRepository;
+import java.util.List;
 import javax.persistence.Query;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
@@ -70,6 +71,13 @@ public class UserRepositoryImpl implements UserRepository{
             ex.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public List<User> getUsers() {
+        Session s = this.factoryBean.getObject().getCurrentSession();
+        Query q = s.createQuery("From User");
+        return q.getResultList();
     }
     
 }

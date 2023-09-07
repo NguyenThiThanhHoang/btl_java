@@ -50,7 +50,7 @@ public class CompanyRepositoryImpl implements CompanyRepository{
 
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
-                predicates.add(b.like(root.get("name"), String.format("%%%s%%", kw)));
+                predicates.add(b.like(root.get("nameCompany"), String.format("%%%s%%", kw)));
             }
 
 

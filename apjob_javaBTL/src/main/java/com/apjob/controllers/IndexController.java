@@ -4,13 +4,16 @@
  */
 package com.apjob.controllers;
 
+import com.apjob.service.LocationService;
 import com.apjob.service.TagService;
+import com.apjob.service.UserService;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ControllerAdvice;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  *
@@ -20,11 +23,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class IndexController {
     
     @Autowired
-    private TagService tagService;
+    private UserService userService;
+    
+    @Autowired
+    private LocationService locationService;
+    
+    @ModelAttribute
+    public void commonAttr(Model model, @RequestParam Map<String, String> params) {
+        model.addAttribute("locations", this.locationService.getLocations(params));
+    }
     
     @RequestMapping("/")
-    public String index(Model model){
-        model.addAttribute("tags", this.tagService.getTags());
+    public String index(Model model, @RequestParam Map<String, String> params){
+        model.addAttribute("candidates", this.userService.getCandidates(params));
         
         return "index";
     }

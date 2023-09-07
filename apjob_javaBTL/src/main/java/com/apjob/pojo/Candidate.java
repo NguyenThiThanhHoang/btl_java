@@ -42,20 +42,18 @@ public class Candidate implements Serializable{
 
     
     private static final long serialVersionUID = 1L;
-    @Id
     @Basic(optional = false)
+    @Id
     @Column(name = "id")
     private Integer id;
     
-    @NotNull(message = "{candidate.schoolName.notNullMsg}")
+    
     @Size(min = 5, max = 50, message = "{candidate.schoolName.lenErrMsg}")
-
     @Column(name = "school_name")
     private String schoolName;
     
     @Column(name = "birthday")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date birthDay;
+    private java.sql.Date birthDay;
     
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "id", referencedColumnName = "id")
@@ -135,14 +133,14 @@ public class Candidate implements Serializable{
     /**
      * @return the birthDay
      */
-    public Date getBirthDay() {
+    public java.sql.Date getBirthDay() {
         return birthDay;
     }
 
     /**
      * @param birthDay the birthDay to set
      */
-    public void setBirthDay(Date birthDay) {
+    public void setBirthDay(java.sql.Date birthDay) {
         this.birthDay = birthDay;
     }
 

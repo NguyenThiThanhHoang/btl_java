@@ -1,0 +1,54 @@
+/*
+Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this template
+*/
+/* 
+    Created on : Sep 5, 2023, 11:10:46 PM
+    Author     : ASUS
+*/
+
+/* CSS cho mini-menu */
+.mini-menu {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 60px; /* Độ rộng mặc định của mini-menu */
+    background-color: #333; /* Màu nền của mini-menu */
+    color: #fff; /* Màu chữ trong mini-menu */
+    padding: 10px 0;
+    text-align: center;
+    z-index: 999; /* Đảm bảo mini-menu hiển thị trên tất cả các phần tử khác */
+    transition: width 0.3s; /* Hiệu ứng chuyển động cho việc thu nhỏ và phóng to */
+}
+
+/* CSS cho nút thu nhỏ/phóng to */
+.toggle-button {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    color: #fff;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+}
+
+/* CSS cho danh sách menu */
+.menu-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: none; /* Ban đầu, danh sách menu sẽ bị ẩn */
+}
+
+.menu-list li {
+    padding: 10px;
+}
+
+/* Khi mini-menu được mở, hiển thị danh sách menu */
+.mini-menu.open {
+    width: 200px; /* Độ rộng của mini-menu khi được mở */
+}
+
+.open .menu-list {
+    display: block;
+}

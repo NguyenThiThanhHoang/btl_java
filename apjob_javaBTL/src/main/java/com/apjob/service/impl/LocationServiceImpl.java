@@ -4,28 +4,27 @@
  */
 package com.apjob.service.impl;
 
-import com.apjob.pojo.Tag;
-import com.apjob.repository.TagRepository;
-import com.apjob.service.TagService;
+import com.apjob.pojo.Location;
+import com.apjob.repository.LocationRepository;
+import com.apjob.service.LocationService;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 /**
  *
  * @author ASUS
  */
 @Service
-public class TagServiceImpl implements TagService{
+public class LocationServiceImpl implements LocationService{
 
     @Autowired
-    private TagRepository tagRepository;
+    private LocationRepository locationRepo;
     
     @Override
-    public List<Tag> getTags(Map<String, String> params) {
-        return this.tagRepository.getTags(params);
+    public List<Location> getLocations(Map<String, String> params) {
+        return this.locationRepo.getLocations(params);
     }
     
 }

@@ -5,6 +5,7 @@
 package com.apjob.repository;
 
 import com.apjob.pojo.User;
+import java.util.List;
 
 
 /**
@@ -12,6 +13,7 @@ import com.apjob.pojo.User;
  * @author ASUS
  */
 public interface UserRepository {
+    List<User> getUsers();
     int countUsers();
     boolean addOrUpdateUser(User u);
     User getUserById(int id);

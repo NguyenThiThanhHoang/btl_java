@@ -6,11 +6,12 @@ package com.apjob.service;
 
 import com.apjob.pojo.Tag;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author ASUS
  */
 public interface TagService {
-    List<Tag> getTags();
+    List<Tag> getTags(Map<String, String> params);
 }

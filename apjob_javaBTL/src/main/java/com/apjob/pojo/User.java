@@ -5,17 +5,15 @@
 package com.apjob.pojo;
 
 import java.io.Serializable;
+import java.sql.Date;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
@@ -40,6 +38,147 @@ import org.springframework.web.multipart.MultipartFile;
     @NamedQuery(name = "User.findByPhone", query = "SELECT u FROM User u WHERE u.phone = :phone"),
     @NamedQuery(name = "User.findByActive", query = "SELECT u FROM User u WHERE u.active = :active")})
 public class User implements Serializable{
+
+    /**
+     * @return the schoolName
+     */
+    public String getSchoolName() {
+        return schoolName;
+    }
+
+    /**
+     * @param schoolName the schoolName to set
+     */
+    public void setSchoolName(String schoolName) {
+        this.schoolName = schoolName;
+    }
+
+    /**
+     * @return the birthDay
+     */
+    public Date getBirthDay() {
+        return birthDay;
+    }
+
+    /**
+     * @param birthDay the birthDay to set
+     */
+    public void setBirthDay(Date birthDay) {
+        this.birthDay = birthDay;
+    }
+
+
+    /**
+     * @return the nameCompany
+     */
+    public String getNameCompany() {
+        return nameCompany;
+    }
+
+    /**
+     * @param nameCompany the nameCompany to set
+     */
+    public void setNameCompany(String nameCompany) {
+        this.nameCompany = nameCompany;
+    }
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    /**
+     * @return the tax
+     */
+    public Integer getTax() {
+        return tax;
+    }
+
+    /**
+     * @param tax the tax to set
+     */
+    public void setTax(Integer tax) {
+        this.tax = tax;
+    }
+
+    /**
+     * @return the emailCompany
+     */
+    public String getEmailCompany() {
+        return emailCompany;
+    }
+
+    /**
+     * @param emailCompany the emailCompany to set
+     */
+    public void setEmailCompany(String emailCompany) {
+        this.emailCompany = emailCompany;
+    }
+
+    /**
+     * @return the phoneCompany
+     */
+    public String getPhoneCompany() {
+        return phoneCompany;
+    }
+
+    /**
+     * @param phoneCompany the phoneCompany to set
+     */
+    public void setPhoneCompany(String phoneCompany) {
+        this.phoneCompany = phoneCompany;
+    }
+
+    /**
+     * @return the address
+     */
+    public String getAddress() {
+        return address;
+    }
+
+    /**
+     * @param address the address to set
+     */
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    /**
+     * @return the avatarCompany
+     */
+    public String getAvatarCompany() {
+        return avatarCompany;
+    }
+
+    /**
+     * @param avatarCompany the avatarCompany to set
+     */
+    public void setAvatarCompany(String avatarCompany) {
+        this.avatarCompany = avatarCompany;
+    }
+
+    /**
+     * @return the fileCompany
+     */
+    public MultipartFile getFileCompany() {
+        return fileCompany;
+    }
+
+    /**
+     * @param fileCompany the fileCompany to set
+     */
+    public void setFileCompany(MultipartFile fileCompany) {
+        this.fileCompany = fileCompany;
+    }
 
     
     private static final long serialVersionUID = 1L;
@@ -75,9 +214,39 @@ public class User implements Serializable{
     @Basic(optional = false)
     @Column(name = "user_role")
     private String userRole;
+    @Column(name = "avatar")
+    private String avatar;
     @Transient
     private MultipartFile file;
+    
+    //Candidate
+    @Transient
+    private String schoolName;
+    @Transient
+    private Date birthDay;
+    @Transient
+    private Integer locationId;
    
+    //employer - company
+    @Transient
+    private String nameCompany;
+    @Transient
+    private String description;
+    @Transient
+    private Integer tax;
+    @Transient
+    private String emailCompany;
+    @Transient
+    private String phoneCompany;
+    @Transient
+    private String address;
+    @Transient
+    private String avatarCompany;
+    
+    @Transient
+    private MultipartFile fileCompany;
+    
+
    
     public User(){
         
@@ -233,5 +402,33 @@ public class User implements Serializable{
      */
     public void setFile(MultipartFile file) {
         this.file = file;
+    }
+
+    /**
+     * @return the avatar
+     */
+    public String getAvatar() {
+        return avatar;
+    }
+
+    /**
+     * @param avatar the avatar to set
+     */
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    /**
+     * @return the location
+     */
+    public Integer getLocationId() {
+        return locationId;
+    }
+
+    /**
+     * @param locationId the location to set
+     */
+    public void setLocationId(Integer locationId) {
+        this.locationId = locationId;
     }
 }

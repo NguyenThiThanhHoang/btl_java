@@ -4,8 +4,8 @@
  */
 package com.apjob.repository.impl;
 
-import com.apjob.pojo.Candidate;
 import com.apjob.pojo.Employer;
+import com.apjob.pojo.User;
 import com.apjob.repository.EmployerRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,35 +48,41 @@ public class EmployerRepositoryImpl implements EmployerRepository{
             String email = null;
             String name = null;
             
-            //dùng regex kiểm tra chuỗi truyền vào có phải email không -> email thì gán -> ngược lại là name
-            String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
-            Pattern pattern = Pattern.compile(emailRegex);
-            Matcher matcher = pattern.matcher(kw);
-            if (matcher.matches()){
-                email = kw;
-            }else{ name = kw; }
+            if (kw != null && !kw.isEmpty()) {
+                //dùng regex kiểm tra chuỗi truyền vào có phải email không -> email thì gán -> ngược lại là name
+                String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+                Pattern pattern = Pattern.compile(emailRegex);
+                Matcher matcher = pattern.matcher(kw);
+                if (matcher.matches()) {
+                    email = kw;
+                } else {
+                    name = kw;
+                }
+            }
             
             Session session = this.factoryBean.getObject().getCurrentSession();
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Employer> criteriaQuery = criteriaBuilder.createQuery(Employer.class);
-            Root root = criteriaQuery.from(Employer.class);
-            criteriaQuery.select(root);
+            CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
+            Root rEmp = criteriaQuery.from(Employer.class);
+            Root rUser = criteriaQuery.from(User.class);
+            criteriaQuery.multiselect(rEmp, rUser);
 
             List<Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.equal(rEmp.get("id"), rUser.get("id")));
 
-            if (email != null && !email.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("user").get("email"), "%" + email + "%"));
+             if (email != null && !email.isEmpty()) {
+                predicates.add(criteriaBuilder.like(rUser.get("email"), String.format("%%%s%%", email)));
             }
 
             if (name != null && !name.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("user").get("name"), "%" + name + "%"));
+                predicates.add(criteriaBuilder.like(rUser.get("name"), String.format("%%%s%%", name)));
             }
 
             if (!predicates.isEmpty()) {
                 criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
             }
 
-            criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
+            criteriaQuery.orderBy(criteriaBuilder.desc(rEmp.get("id")));
             query = session.createQuery(criteriaQuery);
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,12 +112,13 @@ public class EmployerRepositoryImpl implements EmployerRepository{
     public boolean addOrUpdateEmployer(Employer e) {
         Session s = this.factoryBean.getObject().getCurrentSession();
         try {
-            if (e.getId() == null) {
+            Employer employer = new Employer();
+            employer = this.getEmployerById(e.getId());
+            if (employer == null){
                 s.save(e);
             } else {
                 s.update(e);
             }
-
             return true;
         } catch (HibernateException ex) {
             ex.printStackTrace();

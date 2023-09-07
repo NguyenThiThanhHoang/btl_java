@@ -35,11 +35,11 @@ import org.springframework.web.multipart.MultipartFile;
 @NamedQueries({
     @NamedQuery(name = "Company.findAll", query = "SELECT c FROM Company c"),
     @NamedQuery(name = "Company.findById", query = "SELECT c FROM Company c WHERE c.id = :id"),
-    @NamedQuery(name = "Company.findByName", query = "SELECT c FROM Company c WHERE c.name = :name"),
+    @NamedQuery(name = "Company.findByName", query = "SELECT c FROM Company c WHERE c.nameCompany = :nameCompany"),
     @NamedQuery(name = "Company.findByDescription", query = "SELECT c FROM Company c WHERE c.description = :description"),
     @NamedQuery(name = "Company.findByTaxCode", query = "SELECT c FROM Company c WHERE c.tax = :tax"),
-    @NamedQuery(name = "Company.findByEmail", query = "SELECT c FROM Company c WHERE c.email = :email"),
-    @NamedQuery(name = "Company.findByPhone", query = "SELECT c FROM Company c WHERE c.phone = :phone"),
+    @NamedQuery(name = "Company.findByEmail", query = "SELECT c FROM Company c WHERE c.emailCompany = :emailCompany"),
+    @NamedQuery(name = "Company.findByPhone", query = "SELECT c FROM Company c WHERE c.phoneCompany = :phoneCompany"),
     @NamedQuery(name = "Company.findByAddress", query = "SELECT c FROM Company c WHERE c.address = :address")})
 public class Company implements Serializable{
 
@@ -54,21 +54,33 @@ public class Company implements Serializable{
     @Column(name = "name")
     @NotNull(message = "{company.name.notNullMsg}")
     @Size(min = 5, max = 50, message = "{company.name.lenErrMsg}")
-    private String name;
+    private String nameCompany;
+    
     
     @Column(name = "description")
     @Size(min=10, max = 255, message = "{company.desc.lenErrMsg}")
     private String description;
-    @Column(name = "tax")
+    
+    @Basic(optional = false)
+    @Column(name = "tax_code")
     private Integer tax;
+    
+   
     @Column(name = "email")
-    private String email;
+    private String emailCompany;
+   
     @Column(name = "phone")
-    private String phone;
+    private String phoneCompany;
+    
+    @Basic(optional = false)
     @Column(name = "address")
     private String address;
+    
+ 
+    @Column(name = "avatar")
+    private String avatar;
     @Transient
-    private MultipartFile file;
+    private MultipartFile fileCompany;
     
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "company")
     @JsonIgnore
@@ -78,7 +90,7 @@ public class Company implements Serializable{
     @JsonIgnore
     private Set<Rating> ratingSet;
     
-     public Company(){
+    public Company(){
         
     }
     
@@ -88,7 +100,7 @@ public class Company implements Serializable{
 
     public Company(Integer id, String name) {
         this.id = id;
-        this.name = name;
+        this.nameCompany = name;
     }
     
     /**
@@ -108,15 +120,15 @@ public class Company implements Serializable{
     /**
      * @return the name
      */
-    public String getName() {
-        return name;
+    public String getNameCompany() {
+        return nameCompany;
     }
 
     /**
-     * @param name the name to set
+     * @param nameCompany the name to set
      */
-    public void setName(String name) {
-        this.name = name;
+    public void setNameCompany(String nameCompany) {
+        this.nameCompany = nameCompany;
     }
 
     /**
@@ -150,29 +162,29 @@ public class Company implements Serializable{
     /**
      * @return the email
      */
-    public String getEmail() {
-        return email;
+    public String getEmailCompany() {
+        return emailCompany;
     }
 
     /**
-     * @param email the email to set
+     * @param emailCompany the email to set
      */
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmailCompany(String emailCompany) {
+        this.emailCompany = emailCompany;
     }
 
     /**
      * @return the phone
      */
-    public String getPhone() {
-        return phone;
+    public String getPhoneCompany() {
+        return phoneCompany;
     }
 
     /**
-     * @param phone the phone to set
+     * @param phoneCompany the phone to set
      */
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setPhoneCompany(String phoneCompany) {
+        this.phoneCompany = phoneCompany;
     }
 
     /**
@@ -192,15 +204,15 @@ public class Company implements Serializable{
     /**
      * @return the file
      */
-    public MultipartFile getFile() {
-        return file;
+    public MultipartFile getFileCompany() {
+        return fileCompany;
     }
 
     /**
-     * @param file the file to set
+     * @param fileCompany the file to set
      */
-    public void setFile(MultipartFile file) {
-        this.file = file;
+    public void setFileCompany(MultipartFile fileCompany) {
+        this.fileCompany = fileCompany;
     }
 
     /**
@@ -259,6 +271,20 @@ public class Company implements Serializable{
      */
     public void setRatingSet(Set<Rating> ratingSet) {
         this.ratingSet = ratingSet;
+    }
+
+    /**
+     * @return the avatar
+     */
+    public String getAvatar() {
+        return avatar;
+    }
+
+    /**
+     * @param avatar the avatar to set
+     */
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
 
