@@ -173,13 +173,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addOrUpdateUserApi(Map<String, String> params, MultipartFile avatar, MultipartFile avatarCompany) {
+    public User addOrUpdateUserApi(Map<String, String> params, MultipartFile avatar, MultipartFile avatarCompany, int userId) {
         Company company = new Company();
         Employer employer = new Employer();
         Candidate candidate = new Candidate();
         Location location = new Location();
         User user = new User();
         Boolean addResult = false;
+        
+        if (userId != -1){
+            user.setId(userId);
+        }
 
         user.setName(params.get("name"));
         user.setEmail(params.get("username"));

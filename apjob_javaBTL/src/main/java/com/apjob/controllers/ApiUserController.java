@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,12 +64,14 @@ public class ApiUserController {
         return new ResponseEntity<>("SUCCESSFUL", HttpStatus.OK);
     }
     
-    @PostMapping(path = "/addUser/", 
+    
+    //Nếu là add thì truyền tham số userId = -1
+    @PostMapping(path = "/addOrUpdateUser/{userId}", 
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, 
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
-    public ResponseEntity<User> addUser(@RequestParam Map<String, String> params, @RequestPart MultipartFile avatar, @RequestPart MultipartFile avatarCompany) {
-        User user = this.userService.addOrUpdateUserApi(params, avatar, avatarCompany);
+    public ResponseEntity<User> addOrUpdateUser(@RequestParam Map<String, String> params, @RequestPart MultipartFile avatar, @RequestPart MultipartFile avatarCompany, @PathVariable int userId) {
+        User user = this.userService.addOrUpdateUserApi(params, avatar, avatarCompany, userId);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
     
