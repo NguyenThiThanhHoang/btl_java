@@ -181,8 +181,12 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         Boolean addResult = false;
         
+        //!= -1 là update
         if (userId != -1){
             user.setId(userId);
+            candidate.setId(userId);
+            employer.setId(userId);
+            company.setId(this.emRepo.getEmployerById(userId).getCompany().getId());
         }
 
         user.setName(params.get("name"));
