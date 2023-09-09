@@ -18,4 +18,8 @@ public interface UserRepository {
     boolean addOrUpdateUser(User u);
     User getUserById(int id);
     boolean deleteUser(int id);
+    User getUserByEmail(String email);
+    
+    boolean authUser(String username, String password);
+
 }

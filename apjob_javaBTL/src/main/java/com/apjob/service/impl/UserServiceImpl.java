@@ -4,6 +4,7 @@
  */
 package com.apjob.service.impl;
 
+import com.apjob.formatters.LocationFormatters;
 import com.apjob.pojo.Candidate;
 import com.apjob.pojo.Company;
 import com.apjob.pojo.Employer;
@@ -18,6 +19,10 @@ import com.apjob.service.UserService;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -27,35 +32,35 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author ASUS
  */
 @Service
-public class UserServiceImpl implements UserService{
-    
+public class UserServiceImpl implements UserService {
+
     @Autowired
     private Cloudinary cloudinary;
-    
+
     @Autowired
     private UserRepository userRepo;
-    
+
     @Autowired
     private EmployerRepository emRepo;
-    
+
     @Autowired
     private CandidateRepository caRepo;
-    
+
     @Autowired
     private CompanyRepository comRepo;
-    
+
     @Autowired
     private BCryptPasswordEncoder passEncoder;
-    
+
     @Autowired
     private LocationRepository loRepo;
-
 
     @Override
     public UserDetails loadUserByUsername(String string) throws UsernameNotFoundException {
@@ -77,9 +82,8 @@ public class UserServiceImpl implements UserService{
         Company company = new Company();
         Employer employer = new Employer();
         Candidate candidate = new Candidate();
-        Location location = new Location();
         Boolean addResult = false;
-        
+
         if (!u.getFile().isEmpty()) {
             try {
                 Map res = this.cloudinary.uploader().upload(u.getFile().getBytes(), ObjectUtils.asMap("resource_type", "auto"));
@@ -88,7 +92,7 @@ public class UserServiceImpl implements UserService{
                 Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+
         if (!u.getFileCompany().isEmpty()) {
             try {
                 Map res = this.cloudinary.uploader().upload(u.getFileCompany().getBytes(), ObjectUtils.asMap("resource_type", "auto"));
@@ -102,18 +106,15 @@ public class UserServiceImpl implements UserService{
         u.setPassword(this.passEncoder.encode(pass));
         Boolean addUserResult = userRepo.addOrUpdateUser(u);
         int userId = u.getId();
-        
-        if (u.getUserRole().toString().equals("CANDIDATE")){
+
+        if (u.getUserRole().toString().equals("CANDIDATE")) {
             candidate.setId(userId);
-            
-            location = this.loRepo.getLocationById(u.getLocationId());
-            
-            candidate.setLocation(location);
+            candidate.setLocation(u.getLocation());
             candidate.setSchoolName(u.getSchoolName());
             candidate.setBirthDay(u.getBirthDay());
             addResult = caRepo.addOrUpdateCandidate(candidate);
             return addResult;
-        } else if(u.getUserRole().toString().equals("EMPLOYER")){
+        } else if (u.getUserRole().toString().equals("EMPLOYER")) {
             company.setNameCompany(u.getNameCompany());
             company.setAddress(u.getAddress());
             company.setTax(u.getTax());
@@ -121,12 +122,12 @@ public class UserServiceImpl implements UserService{
             company.setPhoneCompany(u.getPhoneCompany());
             company.setDescription(u.getDescription());
             comRepo.addOrUpdateCompany(company);
-            
+
             employer.setId(userId);
             employer.setCompany(company);
             addResult = emRepo.addOrUpdateEmployer(employer);
             return addResult;
-        }else{
+        } else {
             return addUserResult;
         }
     }
@@ -159,6 +160,89 @@ public class UserServiceImpl implements UserService{
     @Override
     public int countCompanyes() {
         return this.comRepo.countCompanys();
+    }
+
+    @Override
+    public User getUserByUn(String username) {
+        return this.userRepo.getUserByEmail(username);
+    }
+
+    @Override
+    public boolean authUser(String username, String password) {
+        return this.userRepo.authUser(username, password);
+    }
+
+    @Override
+    public User addOrUpdateUserApi(Map<String, String> params, MultipartFile avatar, MultipartFile avatarCompany) {
+        Company company = new Company();
+        Employer employer = new Employer();
+        Candidate candidate = new Candidate();
+        Location location = new Location();
+        User user = new User();
+        Boolean addResult = false;
+
+        user.setName(params.get("name"));
+        user.setEmail(params.get("username"));
+        user.setPassword(this.passEncoder.encode(params.get("password")));
+        user.setPhone(params.get("phone"));
+        user.setUserRole(params.get("userRole"));
+
+        if (!avatar.isEmpty()) {
+            try {
+                Map res = this.cloudinary.uploader().upload(avatar.getBytes(),
+                        ObjectUtils.asMap("resource_type", "auto"));
+                user.setAvatar(res.get("secure_url").toString());
+            } catch (IOException ex) {
+                Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        if (user.getUserRole() == "CANDIDATE") {
+            user.setActive(true);
+            addResult = userRepo.addOrUpdateUser(user);
+            if (addResult) {
+                candidate.setId(user.getId());
+                candidate.setSchoolName(params.get("schoolName"));
+                String dateString = params.get("birthday");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+                try {
+                    Date utilDate = dateFormat.parse(dateString);
+                    java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+                    candidate.setBirthDay(sqlDate);
+
+                } catch (ParseException ex) {
+                    candidate.setBirthDay(java.sql.Date.valueOf(LocalDate.now()));
+                    Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                location = this.loRepo.getLocationById(Integer.parseInt(params.get("locationId")));
+                candidate.setLocation(location);
+                caRepo.addOrUpdateCandidate(candidate);
+                return user;
+            } else {
+                return user;
+            }
+
+        } else if (user.getUserRole() == "EMPLOYER") {
+            user.setActive(false);
+            addResult = userRepo.addOrUpdateUser(user);
+            if (addResult) {
+                company.setNameCompany(params.get("nameCompany"));
+                company.setAddress(params.get("address"));
+                company.setTax(Integer.parseInt(params.get("tax")));
+                company.setEmailCompany(params.get("emailCommpany"));
+                company.setPhoneCompany(params.get("phoneCompany"));
+                company.setDescription(params.get("des"));
+                comRepo.addOrUpdateCompany(company);
+
+                employer.setId(user.getId());
+                employer.setCompany(company);
+                emRepo.addOrUpdateEmployer(employer);
+                return user;
+            } else{
+                return user;
+            }
+        }
+        return user;
     }
 
 }

@@ -11,6 +11,7 @@ import com.apjob.pojo.User;
 import java.util.List;
 import java.util.Map;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -31,4 +32,9 @@ public interface UserService extends UserDetailsService{
     List<Company> getCompanys(Map<String, String> params);
     int countCompanyes();
   
+    User getUserByUn(String username);
+    boolean authUser(String username, String password);
+    
+    User addOrUpdateUserApi(Map<String, String> params, MultipartFile avatar, MultipartFile avatarCompany);
+    
 }

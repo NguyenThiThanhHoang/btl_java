@@ -18,4 +18,6 @@ public interface CompanyRepository {
     boolean addOrUpdateCompany(Company c);
     Company getCompanyById(int id);
     boolean deleteCompany(int id);
+    Company getCompanyByEmail(String email);
+    Company getCompanyByTax(int tax);
 }

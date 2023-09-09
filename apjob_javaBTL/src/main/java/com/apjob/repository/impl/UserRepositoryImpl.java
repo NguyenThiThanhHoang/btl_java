@@ -13,6 +13,7 @@ import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,9 @@ public class UserRepositoryImpl implements UserRepository{
 
     @Autowired
     private LocalSessionFactoryBean factoryBean;
+    
+    @Autowired
+    private BCryptPasswordEncoder passEncoder;
     
     
     @Override
@@ -59,6 +63,8 @@ public class UserRepositoryImpl implements UserRepository{
         Session s = this.factoryBean.getObject().getCurrentSession();
         return s.get(User.class, id);
     }
+    
+    
 
     @Override
     public boolean deleteUser(int id) {
@@ -78,6 +84,22 @@ public class UserRepositoryImpl implements UserRepository{
         Session s = this.factoryBean.getObject().getCurrentSession();
         Query q = s.createQuery("From User");
         return q.getResultList();
+    }
+    
+    @Override
+    public User getUserByEmail(String email) {
+        Session s = this.factoryBean.getObject().getCurrentSession();
+        org.hibernate.query.Query q = s.createQuery("FROM User WHERE email=:email");
+        q.setParameter("email", email);
+
+        return (User) q.getSingleResult();
+    }
+
+    @Override
+    public boolean authUser(String username, String password) {
+         User  u = this.getUserByEmail(username);
+        
+        return this.passEncoder.matches(password, u.getPassword());
     }
     
 }

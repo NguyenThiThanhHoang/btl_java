@@ -117,4 +117,16 @@ public class CompanyRepositoryImpl implements CompanyRepository{
             return false;
         }
     }
+
+    @Override
+    public Company getCompanyByEmail(String email) {
+        Session s = this.factoryBean.getObject().getCurrentSession();
+        return s.get(Company.class, email);
+    }
+
+    @Override
+    public Company getCompanyByTax(int tax) {
+        Session s = this.factoryBean.getObject().getCurrentSession();
+        return s.get(Company.class, tax);
+    }
 }

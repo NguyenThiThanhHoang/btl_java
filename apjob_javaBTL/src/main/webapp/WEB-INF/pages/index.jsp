@@ -16,7 +16,7 @@
         <h1>Hello World!</h1>
         <ul>
             <c:forEach items="${candidates}" var="t">
-                <li>${t.schoolName} - ${t.birthDay}</li>
+                <li></li>
             </c:forEach>
         </ul>
     </body>

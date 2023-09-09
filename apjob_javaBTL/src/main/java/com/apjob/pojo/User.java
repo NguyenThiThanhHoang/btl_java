@@ -225,7 +225,7 @@ public class User implements Serializable{
     @Transient
     private Date birthDay;
     @Transient
-    private Integer locationId;
+    private Location location;
    
     //employer - company
     @Transient
@@ -421,14 +421,14 @@ public class User implements Serializable{
     /**
      * @return the location
      */
-    public Integer getLocationId() {
-        return locationId;
+    public Location getLocation() {
+        return location;
     }
 
     /**
-     * @param locationId the location to set
+     * @param location the location to set
      */
-    public void setLocationId(Integer locationId) {
-        this.locationId = locationId;
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

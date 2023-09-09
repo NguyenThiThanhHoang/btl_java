@@ -4,11 +4,10 @@
  */
 package com.apjob.controllers;
 
-import com.apjob.pojo.Candidate;
 import com.apjob.pojo.Company;
-import com.apjob.pojo.Employer;
-import com.apjob.pojo.Tag;
 import com.apjob.pojo.User;
+import com.apjob.repository.CompanyRepository;
+import com.apjob.repository.UserRepository;
 import com.apjob.service.LocationService;
 import com.apjob.service.UserService;
 import java.util.Map;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -36,7 +34,13 @@ public class UserController {
     private LocationService locationService;
 
     @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
     private UserService userService;
+
+    @Autowired
+    private CompanyRepository companyRepo;
 
     @ModelAttribute
     public void commonAttr(Model model, @RequestParam Map<String, String> params) {
@@ -53,13 +57,27 @@ public class UserController {
     public String Register(@ModelAttribute("user") @Valid User user,
             BindingResult rs) {
         if (!rs.hasErrors()) {
-            if (this.userService.addOrUpdateUser(user) == true) {
-                return "redirect:/";
+            User checkUser = this.userRepo.getUserByEmail(user.getEmail());
+            Company checkCoEmail = new Company();
+            Company checkCoTax = new Company();
+            if (user.getEmailCompany() != null && user.getTax() != null) {
+                checkCoEmail = this.companyRepo.getCompanyByEmail(user.getEmailCompany());
+                checkCoTax = this.companyRepo.getCompanyByTax(user.getTax());
+            }
+            if (checkUser == null && checkCoEmail == null && checkCoTax == null) {
+                if (this.userService.addOrUpdateUser(user) == true) {
+                    return "redirect:/";
+                } else {
+                    //thêm lỗi
+                    return "redirect:/";
+                }
+
             } else {
-                return "index";
+                //viết console lỗi
+                return "addUser";
             }
         }
-        return "index";
+        return "redirect:/addUser";
     }
 
 }
