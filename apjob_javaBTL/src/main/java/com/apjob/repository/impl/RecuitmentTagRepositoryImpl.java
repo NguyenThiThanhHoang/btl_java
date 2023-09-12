@@ -3,9 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package com.apjob.repository.impl;
-
-import com.apjob.pojo.CompanyTag;
-import com.apjob.repository.CompanyTagRepository;
+import com.apjob.pojo.RecruitmentTag;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +19,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import com.apjob.repository.RecruitmentTagRepository;
 
 /**
  *
@@ -29,27 +28,27 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @PropertySource("classpath:configs.properties")
 @Repository
-public class CompanyTagRepositoryImpl implements CompanyTagRepository{
+public class RecuitmentTagRepositoryImpl implements RecruitmentTagRepository{
     @Autowired
     private LocalSessionFactoryBean factoryBean;
 
     @Override
-    public List<CompanyTag> getCompanyTags(Map<String, String> params) {
-        Query query = null;
+    public List<RecruitmentTag> getRecuitmentTags(Map<String, String> params) {
+               Query query = null;
         try {
-            String companyId = params.get("companyId");
+            String recruitmentId = params.get("recruitmentId");
             String tagId = params.get("tagId");
 
             Session session = this.factoryBean.getObject().getCurrentSession();
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<CompanyTag> criteriaQuery = criteriaBuilder.createQuery(CompanyTag.class);
-            Root root = criteriaQuery.from(CompanyTag.class);
+            CriteriaQuery<RecruitmentTag> criteriaQuery = criteriaBuilder.createQuery(RecruitmentTag.class);
+            Root root = criteriaQuery.from(RecruitmentTag.class);
             criteriaQuery.select(root);
 
             List<Predicate> predicates = new ArrayList<>();
 
-            if (companyId != null && !companyId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("company_id"), "=" + companyId));
+            if (recruitmentId != null && !recruitmentId.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(root.get("recruitment_id"), "=" + recruitmentId));
             }
 
             if (tagId != null && !tagId.isEmpty()) {
@@ -70,21 +69,21 @@ public class CompanyTagRepositoryImpl implements CompanyTagRepository{
     }
 
     @Override
-    public int countCompanyTags(Map<String, String> params) {
-        Session s = this.factoryBean.getObject().getCurrentSession();
+    public int countRecuitmentTags(Map<String, String> params) {
+         Session s = this.factoryBean.getObject().getCurrentSession();
 
         try {
-            String companyId = params.get("companyId");
+            String recruitmentId = params.get("recruitmentId");
             String tagId = params.get("tagId");
 
             CriteriaBuilder criteriaBuilder = s.getCriteriaBuilder();
             CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-            Root<CompanyTag> root = criteriaQuery.from(CompanyTag.class);
+            Root<RecruitmentTag> root = criteriaQuery.from(RecruitmentTag.class);
 
-            Predicate candidatePredicate = criteriaBuilder.equal(root.get("tag_id"), tagId);
-            Predicate tagPredicate = criteriaBuilder.equal(root.get("company_id"), companyId);
+            Predicate recruitmentPredicate = criteriaBuilder.equal(root.get("tag_id"), tagId);
+            Predicate tagPredicate = criteriaBuilder.equal(root.get("recruitment_id"), recruitmentId);
 
-            Predicate combinedPredicate = criteriaBuilder.and(candidatePredicate, tagPredicate);
+            Predicate combinedPredicate = criteriaBuilder.and(recruitmentPredicate, tagPredicate);
 
             criteriaQuery.select(criteriaBuilder.count(root));
             criteriaQuery.where(combinedPredicate);
@@ -99,10 +98,10 @@ public class CompanyTagRepositoryImpl implements CompanyTagRepository{
     }
 
     @Override
-    public boolean addCompanyTag(CompanyTag c) {
-       Session s = this.factoryBean.getObject().getCurrentSession();
+    public boolean addRecuitmentTag(RecruitmentTag r) {
+        Session s = this.factoryBean.getObject().getCurrentSession();
         try {
-            s.save(c);
+            s.save(r);
             return true;
         } catch (HibernateException ex) {
             ex.printStackTrace();
@@ -111,18 +110,18 @@ public class CompanyTagRepositoryImpl implements CompanyTagRepository{
     }
 
     @Override
-    public List<CompanyTag> getCompanyTagById(String companyId, String tagId) {
+    public List<RecruitmentTag> getRecuitmentTagById(String recuitmentId, String tagId) {
         Session session = factoryBean.getObject().getCurrentSession();
         Query query = null;
         try {
            
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<CompanyTag> criteriaQuery = criteriaBuilder.createQuery(CompanyTag.class);
-            Root root = criteriaQuery.from(CompanyTag.class);
+            CriteriaQuery<RecruitmentTag> criteriaQuery = criteriaBuilder.createQuery(RecruitmentTag.class);
+            Root root = criteriaQuery.from(RecruitmentTag.class);
             criteriaQuery.select(root);
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.equal(root.get("tag_id"), tagId));
-            predicates.add(criteriaBuilder.equal(root.get("company_id"), companyId));
+            predicates.add(criteriaBuilder.equal(root.get("recruitment_id"), recuitmentId));
             criteriaQuery.where(predicates.toArray(new Predicate[0]));
 
             query = session.createQuery(criteriaQuery);
@@ -133,17 +132,18 @@ public class CompanyTagRepositoryImpl implements CompanyTagRepository{
     }
 
     @Override
-    public boolean deleteCompanyTagById(String companyId, String tagId) {
+    public boolean deleteRecuitmentTagById(String recuitmentId, String tagId) {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        List<CompanyTag> companyTags = this.getCompanyTagById(companyId, tagId);
+        List<RecruitmentTag> recuitmentTags = this.getRecuitmentTagById(recuitmentId, tagId);
         try {
-            for (CompanyTag c : companyTags){
+            for (RecruitmentTag c : recuitmentTags){
                  s.delete(c);
             }
-            return companyTags.size() > 0;
+            return recuitmentTags.size() > 0;
         } catch (HibernateException ex) {
             ex.printStackTrace();
             return false;
         }
     }
+    
 }

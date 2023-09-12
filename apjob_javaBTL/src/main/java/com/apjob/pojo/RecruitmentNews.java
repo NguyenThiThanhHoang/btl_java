@@ -43,61 +43,66 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "RecruitmentNews.findByDescription", query = "SELECT r FROM RecruitmentNews r WHERE r.description = :description"),
     @NamedQuery(name = "RecruitmentNews.findByDeadline", query = "SELECT r FROM RecruitmentNews r WHERE r.deadline = :deadline"),
     @NamedQuery(name = "RecruitmentNews.findByCreatedDay", query = "SELECT r FROM RecruitmentNews r WHERE r.createdDay = :createdDay")})
-public class RecruitmentNews implements Serializable{
+public class RecruitmentNews implements Serializable {
 
-   
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    
+
     @Basic(optional = false)
     @Column(name = "title")
     @NotNull(message = "{recruitment.name.notNullMsg}")
     @Size(min = 5, max = 50, message = "{recruitment.title.lenErrMsg}")
     private String title;
-    
+
     @Column(name = "description")
-    @Size(min=10, max = 255, message = "{recruitment.desc.lenErrMsg}")
+    @Size(min = 10, max = 255, message = "{recruitment.desc.lenErrMsg}")
     private String description;
-    
+
     @Basic(optional = false)
     @Column(name = "job_vanacy")
-    @Size(min=10, max = 50, message = "{recruitment.jobVanacy.lenErrMsg}")
+    @Size(min = 10, max = 50, message = "{recruitment.jobVanacy.lenErrMsg}")
     private String jobVanacy;
-    
+
     @Basic(optional = false)
     @Column(name = "salary")
-    @Size(min=10, max = 50, message = "{recruitment.salary.lenErrMsg}")
+    @Size(min = 10, max = 50, message = "{recruitment.salary.lenErrMsg}")
     private String salary;
-    
+
     @Basic(optional = false)
     @Column(name = "deadline")
     @Temporal(TemporalType.TIMESTAMP)
     private Date deadline;
-    
+
     @Basic(optional = false)
     @Column(name = "created_day")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDay;
-    
-   
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     private Employer employer;
-    
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "location_id", referencedColumnName = "id")
+    private Location location;
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "recruitment")
     @JsonIgnore
     private Set<CandidateRecruitment> candidateRecruitmentSet;
-    
-    
-    public RecruitmentNews(){
-        
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "recruitment")
+    @JsonIgnore
+    private Set<RecruitmentTag> recuitmentTagSet;
+
+    public RecruitmentNews() {
+
     }
-    
-     public RecruitmentNews(Integer id) {
+
+    public RecruitmentNews(Integer id) {
         this.id = id;
     }
 
@@ -105,8 +110,8 @@ public class RecruitmentNews implements Serializable{
         this.id = id;
         this.title = title;
     }
-    
-     /**
+
+    /**
      * @return the serialVersionUID
      */
     public static long getSerialVersionUID() {
@@ -210,7 +215,7 @@ public class RecruitmentNews implements Serializable{
     public void setEmployer(Employer employer) {
         this.employer = employer;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -264,5 +269,32 @@ public class RecruitmentNews implements Serializable{
         this.candidateRecruitmentSet = candidateRecruitmentSet;
     }
 
-   
+    /**
+     * @return the recuitmentTagSet
+     */
+    public Set<RecruitmentTag> getRecuitmentTagSet() {
+        return recuitmentTagSet;
+    }
+
+    /**
+     * @param recuitmentTagSet the recuitmentTagSet to set
+     */
+    public void setRecuitmentTagSet(Set<RecruitmentTag> recuitmentTagSet) {
+        this.recuitmentTagSet = recuitmentTagSet;
+    }
+
+    /**
+     * @return the location
+     */
+    public Location getLocation() {
+        return location;
+    }
+
+    /**
+     * @param location the location to set
+     */
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
 }

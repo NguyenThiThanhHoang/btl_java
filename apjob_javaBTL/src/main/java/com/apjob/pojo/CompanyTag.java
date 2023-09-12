@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "CompanyTag.findByTagName", query = "SELECT c FROM CompanyTag c WHERE c.tagName = :tagName")})
 public class CompanyTag implements Serializable{
     
-     private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     
     @Id
     @ManyToOne(cascade = CascadeType.ALL)
@@ -115,7 +115,7 @@ public class CompanyTag implements Serializable{
 
     @Override
     public String toString() {
-        return "com.apjob.pojo.CandidateRecruitment[ company=" + company 
+        return "com.apjob.pojo.CompanyTag[ company=" + company 
                 + ",  tag=" + tag + " ]";
     }
     

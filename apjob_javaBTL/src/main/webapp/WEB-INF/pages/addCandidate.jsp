@@ -25,7 +25,7 @@
 
     <div class="dropdown">
         <label for="location">Tỉnh/TP</label>
-        <form:select path="locationId" class="form-select" name="locationId" id="locationId">
+        <form:select path="location" class="form-select" name="location" id="location">
             <c:forEach items="${locations}" var="l">
                 <form:option value="${l.id}">${l.name}</form:option>
             </c:forEach>

@@ -4,7 +4,7 @@
  */
 package com.apjob.service.impl;
 
-import com.apjob.formatters.LocationFormatters;
+import com.apjob.formatters.LocationFormatter;
 import com.apjob.pojo.Candidate;
 import com.apjob.pojo.Company;
 import com.apjob.pojo.Employer;

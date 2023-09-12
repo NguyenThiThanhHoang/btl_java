@@ -67,6 +67,11 @@ public class RecruitmentNewsRepositoryImpl implements RecruitmentNewsRepository 
             if (salary != null && !salary.isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("salary"), String.format("%%%s%%", salary)));
             }
+            
+            String employer = params.get("employer");
+            if (employer != null && !employer.isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("employer_id").get("company_id").get("name"), String.format("%%%s%%", employer)));
+            }
 
             criteriaQuery.where(predicates.toArray(new Predicate[0]));
         }

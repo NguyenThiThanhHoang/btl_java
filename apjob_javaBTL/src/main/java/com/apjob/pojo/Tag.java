@@ -52,6 +52,10 @@ public class Tag implements Serializable{
     @JsonIgnore
     private Set<CompanyTag> companyTags;
     
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "tag")
+    @JsonIgnore
+    private Set<RecruitmentTag> recuitmentTags;
+    
     public Tag() {
     }
 
@@ -142,5 +146,19 @@ public class Tag implements Serializable{
     @Override
     public String toString() {
         return "com.apjob.pojo.Tag[ id=" + id + " ]";
+    }
+
+    /**
+     * @return the recuitmentTags
+     */
+    public Set<RecruitmentTag> getRecuitmentTags() {
+        return recuitmentTags;
+    }
+
+    /**
+     * @param recuitmentTags the recuitmentTags to set
+     */
+    public void setRecuitmentTags(Set<RecruitmentTag> recuitmentTags) {
+        this.recuitmentTags = recuitmentTags;
     }
 }

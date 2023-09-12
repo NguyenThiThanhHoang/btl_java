@@ -9,8 +9,10 @@ import com.apjob.service.TagService;
 import com.apjob.service.UserService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @author ASUS
  */
 @Controller
+@ControllerAdvice
+@PropertySource("classpath:configs.properties")
 public class IndexController {
     
     @Autowired

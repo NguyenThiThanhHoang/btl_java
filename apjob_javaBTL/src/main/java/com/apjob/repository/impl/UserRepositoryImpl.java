@@ -24,15 +24,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 @PropertySource("classpath:configs.properties")
 @Repository
-public class UserRepositoryImpl implements UserRepository{
+public class UserRepositoryImpl implements UserRepository {
 
     @Autowired
     private LocalSessionFactoryBean factoryBean;
-    
+
     @Autowired
     private BCryptPasswordEncoder passEncoder;
-    
-    
+
     @Override
     public int countUsers() {
         Session s = this.factoryBean.getObject().getCurrentSession();
@@ -63,8 +62,6 @@ public class UserRepositoryImpl implements UserRepository{
         Session s = this.factoryBean.getObject().getCurrentSession();
         return s.get(User.class, id);
     }
-    
-    
 
     @Override
     public boolean deleteUser(int id) {
@@ -85,21 +82,29 @@ public class UserRepositoryImpl implements UserRepository{
         Query q = s.createQuery("From User");
         return q.getResultList();
     }
-    
+
     @Override
     public User getUserByEmail(String email) {
         Session s = this.factoryBean.getObject().getCurrentSession();
         org.hibernate.query.Query q = s.createQuery("FROM User WHERE email=:email");
         q.setParameter("email", email);
 
-        return (User) q.getSingleResult();
+        List<User> userList = q.getResultList();
+
+        // Kiểm tra xem có người dùng nào có địa chỉ email tương ứng hay không
+        if (userList.isEmpty()) {
+            return null; // null nếu không tìm thấy
+        } else {
+            return userList.get(0);
+        }
+
     }
 
     @Override
     public boolean authUser(String username, String password) {
-         User  u = this.getUserByEmail(username);
-        
+        User u = this.getUserByEmail(username);
+
         return this.passEncoder.matches(password, u.getPassword());
     }
-    
+
 }

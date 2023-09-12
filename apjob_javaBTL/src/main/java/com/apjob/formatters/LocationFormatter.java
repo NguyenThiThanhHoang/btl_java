@@ -13,7 +13,7 @@ import org.springframework.format.Formatter;
  *
  * @author ASUS
  */
-public class LocationFormatters implements Formatter<Location>{
+public class LocationFormatter implements Formatter<Location>{
 
     @Override
     public String print(Location l, Locale locale) {
@@ -21,8 +21,8 @@ public class LocationFormatters implements Formatter<Location>{
     }
 
     @Override
-    public Location parse(String locationId, Locale locale) throws ParseException {
-        int id = Integer.parseInt(locationId);
+    public Location parse(String location, Locale locale) throws ParseException {
+        int id = Integer.parseInt(location);
         return new Location(id);
     }
     

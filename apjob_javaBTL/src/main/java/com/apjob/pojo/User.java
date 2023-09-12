@@ -431,4 +431,9 @@ public class User implements Serializable{
     public void setLocation(Location location) {
         this.location = location;
     }
+
+    /**
+     * @return the location
+     */
+
 }

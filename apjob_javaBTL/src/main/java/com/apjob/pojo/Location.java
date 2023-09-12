@@ -31,7 +31,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Location.findAll", query = "SELECT l FROM Location l"),
     @NamedQuery(name = "Location.findById", query = "SELECT l FROM Location l WHERE l.id = :id"),
     @NamedQuery(name = "Location.findByName", query = "SELECT l FROM Location l WHERE l.name = :name")})
-public class Location implements Serializable{
+public class Location implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -42,15 +42,18 @@ public class Location implements Serializable{
     @Basic(optional = false)
     @Column(name = "location_name")
     private String name;
-    
+
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "id")
     @JsonIgnore
     private Set<Candidate> candidateSet;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "id")
+    @JsonIgnore
+    private Set<RecruitmentNews> recruitmentNewsSet;
+
     public Location() {
     }
 
-    
     public Location(Integer id) {
         this.id = id;
     }
@@ -59,8 +62,8 @@ public class Location implements Serializable{
         this.id = id;
         this.name = name;
     }
-    
-     /**
+
+    /**
      * @return the id
      */
     public Integer getId() {
@@ -87,7 +90,7 @@ public class Location implements Serializable{
     public void setName(String name) {
         this.name = name;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -126,6 +129,19 @@ public class Location implements Serializable{
     public void setCandidateSet(Set<Candidate> candidateSet) {
         this.candidateSet = candidateSet;
     }
-    
-   
+
+    /**
+     * @return the recruitmentNewsSet
+     */
+    public Set<RecruitmentNews> getRecruitmentNewsSet() {
+        return recruitmentNewsSet;
+    }
+
+    /**
+     * @param recruitmentNewsSet the recruitmentNewsSet to set
+     */
+    public void setRecruitmentNewsSet(Set<RecruitmentNews> recruitmentNewsSet) {
+        this.recruitmentNewsSet = recruitmentNewsSet;
+    }
+
 }
