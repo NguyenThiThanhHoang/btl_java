@@ -90,12 +90,14 @@ public class UserRepositoryImpl implements UserRepository {
         q.setParameter("email", email);
 
         List<User> userList = q.getResultList();
+        User u = new User();
 
         // Kiểm tra xem có người dùng nào có địa chỉ email tương ứng hay không
-        if (userList.isEmpty()) {
-            return null; // null nếu không tìm thấy
+        if (userList.size() <= 0) {
+            return u; // null nếu không tìm thấy
         } else {
-            return userList.get(0);
+            u = userList.get(0);
+            return u;
         }
 
     }

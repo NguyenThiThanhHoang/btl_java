@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -56,10 +57,13 @@ public class UserController {
     @PostMapping("/addUser")
     public String Register(@ModelAttribute("user") @Valid User user,
             BindingResult rs) {
-        if (!rs.hasErrors()) {
+        if (rs.hasErrors()) {
+            for (ObjectError error : rs.getAllErrors()) {
+            System.out.println("Lỗi: " + error.getDefaultMessage());
+        }
             User checkUser = this.userRepo.getUserByEmail(user.getEmail());
-            Company checkCoEmail = new Company();
-            Company checkCoTax = new Company();
+            Company checkCoEmail = null;
+            Company checkCoTax = null;
             if (user.getEmailCompany() != null && user.getTax() != null) {
                 checkCoEmail = this.companyRepo.getCompanyByEmail(user.getEmailCompany());
                 checkCoTax = this.companyRepo.getCompanyByTax(user.getTax());
@@ -73,7 +77,7 @@ public class UserController {
                 }
 
             } else {
-                //viết console lỗi
+                //viết c\nsole lỗi
                 return "addUser";
             }
         }
