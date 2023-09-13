@@ -14,6 +14,6 @@ import java.util.Map;
  */
 public interface RecruitmentService {
     List<RecruitmentNews> getRecruitmentNews(Map<String, String> params);
-    RecruitmentNews addOrUpdateRecruitmentNews(Map<String, String> params, int recruitmentId, int employerId, List<String> tagIds);
+    RecruitmentNews addOrUpdateRecruitmentNews(RecruitmentNews recruitment, int recruitmentId, List<String> tagIds);
     RecruitmentNews getRecruitmentNewsById (int id);
 }

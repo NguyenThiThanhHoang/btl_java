@@ -4,6 +4,7 @@
  */
 package com.apjob.configs;
 
+import com.apjob.service.UserService;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,9 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    @Autowired
+    private UserService userService;
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -57,7 +61,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
             throws Exception {
 
         http.formLogin().loginPage("/login")
-                .usernameParameter("username")
+                .usernameParameter("email")
                 .passwordParameter("password");
 
         http.formLogin().defaultSuccessUrl("/")
@@ -67,13 +71,12 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.exceptionHandling()
                 .accessDeniedPage("/login?accessDenied");
 
-//        http.authorizeRequests().antMatchers("/").permitAll()
-//                .antMatchers("/**/add")
-//                .access("hasRole('ROLE_ADMIN')");
-//        .antMatchers("/**/pay")
-//                .access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+        http.authorizeRequests().antMatchers("/").permitAll();
+        http.authorizeRequests().antMatchers("/**/addUser")
+                .access("hasRole('ROLE_ADMIN')");
         http.csrf().disable();
     }
+    
 
     @Bean
     public Cloudinary cloudinary() {
@@ -85,6 +88,5 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
                         "secure", true));
         return cloudinary;
     }
-
 
 }

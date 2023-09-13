@@ -8,6 +8,7 @@ import com.apjob.pojo.Employer;
 import com.apjob.pojo.RecruitmentNews;
 import com.apjob.pojo.RecruitmentTag;
 import com.apjob.pojo.Tag;
+import com.apjob.pojo.User;
 import com.apjob.repository.EmployerRepository;
 import com.apjob.repository.LocationRepository;
 import com.apjob.repository.RecruitmentNewsRepository;
@@ -24,6 +25,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -46,6 +49,9 @@ public class RecruitmentServiceImpl implements RecruitmentService {
     private TagRepository tagRepo;
     
     @Autowired
+    private UserRepository userRepo;
+    
+    @Autowired
     private RecruitmentTagRepository reTagRepo;
 
     @Override
@@ -53,38 +59,74 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         return this.recruitmentNewsRepo.getRecruitmentNews(params);
     }
 
-    @Override
-    public RecruitmentNews addOrUpdateRecruitmentNews(Map<String, String> params, int recruitmentId, int employerId, List<String> tagIds) {
-        RecruitmentNews recruitment = new RecruitmentNews();
-        RecruitmentTag recruitmentTag = new RecruitmentTag();
+//    @Override
+//    public RecruitmentNews addOrUpdateRecruitmentNews(Map<String, String> params, int recruitmentId, int employerId, List<String> tagIds) {
+//        RecruitmentNews recruitment = new RecruitmentNews();
+//        RecruitmentTag recruitmentTag = new RecruitmentTag();
+//
+//        if (recruitmentId != 0) {
+//            recruitment.setId(recruitmentId);
+//        }
+//
+//        String dateString = params.get("deadline");
+//        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+//        try {
+//            Date utilDate = dateFormat.parse(dateString);
+//            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
+//            recruitment.setDeadline(sqlDate);
+//
+//        } catch (ParseException ex) {
+//            recruitment.setDeadline(java.sql.Date.valueOf(LocalDate.now()));
+//            Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        
+//        recruitment.setCreatedDay(java.sql.Date.valueOf(LocalDate.now()));
+//        recruitment.setDescription(params.get("des"));
+//        recruitment.setEmployer(this.emRepo.getEmployerById(employerId));
+//        recruitment.setJobVanacy(params.get("jobVanacy"));
+//        recruitment.setSalary(params.get("salary"));
+//        recruitment.setTitle(params.get("title"));
+//        recruitment.setLocation(this.loRepo.getLocationById(Integer.parseInt(params.get("locationId"))));
+//        
+//        boolean result = this.recruitmentNewsRepo.addOrUpdateRecruitmentNews(recruitment);
+//        
+//        if (result){
+//            for (String i : tagIds){
+//                Tag tag = new Tag();
+//                tag = this.tagRepo.getTagById(Integer.parseInt(i));
+//                if (tag != null){
+//                    recruitmentTag.setTag(tag);
+//                    recruitmentTag.setTagName(tag.getName());
+//                    recruitmentTag.setRecruitment(recruitment);
+//                    this.reTagRepo.addRecuitmentTag(recruitmentTag);
+//                }
+//            }
+//            return recruitment;
+//        }else{
+//            return recruitment;
+//        }
+//       
+//    }
 
-        if (recruitmentId != -1) {
+    @Override
+    public RecruitmentNews getRecruitmentNewsById(int i) {
+        return this.recruitmentNewsRepo.getRecruitmentNewsById(i);
+    }
+
+    @Override
+    public RecruitmentNews addOrUpdateRecruitmentNews(RecruitmentNews recruitment,int recruitmentId, List<String> tagIds) {
+        RecruitmentTag recruitmentTag = new RecruitmentTag();
+        recruitment.setCreatedDay(java.sql.Date.valueOf(LocalDate.now()));
+        
+        if (recruitmentId != 0) {
             recruitment.setId(recruitmentId);
         }
-
-        String dateString = params.get("deadline");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
-        try {
-            Date utilDate = dateFormat.parse(dateString);
-            java.sql.Date sqlDate = new java.sql.Date(utilDate.getTime());
-            recruitment.setDeadline(sqlDate);
-
-        } catch (ParseException ex) {
-            recruitment.setDeadline(java.sql.Date.valueOf(LocalDate.now()));
-            Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-        }
         
-        recruitment.setCreatedDay(java.sql.Date.valueOf(LocalDate.now()));
-        recruitment.setDescription(params.get("des"));
-        recruitment.setEmployer(this.emRepo.getEmployerById(employerId));
-        recruitment.setJobVanacy(params.get("jobVanacy"));
-        recruitment.setSalary(params.get("salary"));
-        recruitment.setTitle(params.get("title"));
-        recruitment.setLocation(this.loRepo.getLocationById(Integer.parseInt(params.get("locationId"))));
-        
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User u = this.userRepo.getUserByEmail(authentication.getName());
+        recruitment.setEmployer(this.emRepo.getEmployerById(u.getId()));
         boolean result = this.recruitmentNewsRepo.addOrUpdateRecruitmentNews(recruitment);
-        
-        if (result){
+         if (result){
             for (String i : tagIds){
                 Tag tag = new Tag();
                 tag = this.tagRepo.getTagById(Integer.parseInt(i));
@@ -99,12 +141,6 @@ public class RecruitmentServiceImpl implements RecruitmentService {
         }else{
             return recruitment;
         }
-       
-    }
-
-    @Override
-    public RecruitmentNews getRecruitmentNewsById(int i) {
-        return this.recruitmentNewsRepo.getRecruitmentNewsById(i);
     }
 
 }

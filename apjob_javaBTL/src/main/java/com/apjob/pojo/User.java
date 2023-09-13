@@ -15,10 +15,13 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -37,7 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
     @NamedQuery(name = "User.findByEmail", query = "SELECT u FROM User u WHERE u.email = :email"),
     @NamedQuery(name = "User.findByPhone", query = "SELECT u FROM User u WHERE u.phone = :phone"),
     @NamedQuery(name = "User.findByActive", query = "SELECT u FROM User u WHERE u.active = :active")})
-public class User implements Serializable{
+public class User implements Serializable {
 
     /**
      * @return the schoolName
@@ -66,7 +69,6 @@ public class User implements Serializable{
     public void setBirthDay(Date birthDay) {
         this.birthDay = birthDay;
     }
-
 
     /**
      * @return the nameCompany
@@ -180,31 +182,30 @@ public class User implements Serializable{
         this.fileCompany = fileCompany;
     }
 
-    
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-   
+
     @Basic(optional = false)
     @NotNull(message = "{user.name.notNullMsg}")
     @Size(min = 5, max = 100, message = "{user.name.lenErrMsg}")
     @Column(name = "name")
     private String name;
-   
+
     @Basic(optional = false)
     @NotNull(message = "{user.email.notNullMsg}")
     @Size(min = 5, max = 50, message = "{user.email.lenErrMsg}")
     @Column(name = "email")
     private String email;
-    
+
     @Basic(optional = false)
     @NotNull(message = "{user.phone.notNullMsg}")
     @Column(name = "phone")
     private String phone;
-    
+
     @Basic(optional = false)
     @NotNull(message = "{user.password.notNullMsg}")
     @Column(name = "password")
@@ -218,15 +219,18 @@ public class User implements Serializable{
     private String avatar;
     @Transient
     private MultipartFile file;
-    
+
     //Candidate
     @Transient
     private String schoolName;
+    
     @Transient
+    @Temporal(TemporalType.DATE)
     private Date birthDay;
+    
     @Transient
     private Location location;
-   
+
     //employer - company
     @Transient
     private String nameCompany;
@@ -242,17 +246,15 @@ public class User implements Serializable{
     private String address;
     @Transient
     private String avatarCompany;
-    
+
     @Transient
     private MultipartFile fileCompany;
-    
 
-   
-    public User(){
-        
+    public User() {
+
     }
-    
-     public User(Integer id) {
+
+    public User(Integer id) {
         this.id = id;
     }
 
@@ -264,7 +266,7 @@ public class User implements Serializable{
         this.password = password;
         this.userRole = userRole;
     }
-    
+
     /**
      * @return the id
      */
@@ -359,12 +361,10 @@ public class User implements Serializable{
     /**
      * @param userRole the userRole to set
      */
-    
     public void setUserRole(String userRole) {
         this.userRole = userRole;
     }
-    
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -435,5 +435,4 @@ public class User implements Serializable{
     /**
      * @return the location
      */
-
 }

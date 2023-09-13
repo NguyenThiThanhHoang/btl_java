@@ -47,6 +47,11 @@ public class UserController {
     public void commonAttr(Model model, @RequestParam Map<String, String> params) {
         model.addAttribute("locations", this.locationService.getLocations(params));
     }
+    
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
 
     @GetMapping("/addUser")
     public String list(Model model) {
@@ -57,7 +62,7 @@ public class UserController {
     @PostMapping("/addUser")
     public String Register(@ModelAttribute("user") @Valid User user,
             BindingResult rs) {
-        if (rs.hasErrors()) {
+        if (!rs.hasErrors()) {
             for (ObjectError error : rs.getAllErrors()) {
             System.out.println("Lỗi: " + error.getDefaultMessage());
         }

@@ -192,8 +192,8 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         Boolean addResult = false;
         
-        //!= -1 là update
-        if (userId != -1){
+        //!= 0 là update
+        if (userId != 0){
             user.setId(userId);
             candidate.setId(userId);
             employer.setId(userId);

@@ -7,6 +7,7 @@ package com.apjob.controllers;
 import com.apjob.pojo.RecruitmentNews;
 import com.apjob.service.RecruitmentService;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +37,12 @@ public class ApiRecruitmentNews {
     @Autowired
     private RecruitmentService recruitmentService;
 
-    @PostMapping(path = "/addOrUpdateRecruitment/{recruimentId}-{employerId}",
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+    @PostMapping(path = "/addOrUpdateRecruitment/{recruimentId}/",
+            consumes = {MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
-    public ResponseEntity<RecruitmentNews> addOrUpdateRecruitment(@RequestParam Map<String, String> params, @PathVariable int recruitmentId, @PathVariable int employerId, @RequestParam(name = "tags", required = false) List<String> tagIds) {
-        RecruitmentNews recruitment = this.recruitmentService.addOrUpdateRecruitmentNews(params, recruitmentId, recruitmentId, tagIds);
+    public ResponseEntity<RecruitmentNews> addOrUpdateRecruitment(@RequestBody RecruitmentNews r, @PathVariable(value = "recruitmentId") int recruitmentId, @RequestParam(name = "tags", required = false) List<String> tagIds) {
+        RecruitmentNews recruitment = this.recruitmentService.addOrUpdateRecruitmentNews(r, recruitmentId, tagIds);
         return new ResponseEntity<>(recruitment, HttpStatus.CREATED);
     }
 

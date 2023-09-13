@@ -65,7 +65,7 @@ public class ApiUserController {
     }
     
     
-    //Nếu là add thì truyền tham số userId = -1
+    //Nếu là add thì truyền tham số userId = 0
     @PostMapping(path = "/addOrUpdateUser/{userId}", 
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, 
             produces = {MediaType.APPLICATION_JSON_VALUE})

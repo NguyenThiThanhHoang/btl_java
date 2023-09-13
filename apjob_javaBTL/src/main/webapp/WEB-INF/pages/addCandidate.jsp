@@ -7,6 +7,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 
 <div class="form-floating mb-3 mt-3">
@@ -14,6 +16,7 @@
     <label for="schoolName">Trường đại học/cao đẳng</label>
     <form:errors path="schoolName" element="div" cssClass="text-danger" />
 </div>
+
 
 <div class="form-floating mb-3 mt-3">
     <form:input type="date" class="form-control" path="birthDay" id="birthDay" placeholder="Ngày tháng năm sinh" name="birthDay" />

@@ -69,7 +69,7 @@ public class RecruitmentNews implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "salary")
-    @Size(min = 10, max = 50, message = "{recruitment.salary.lenErrMsg}")
+    @Size(min = 5, max = 50, message = "{recruitment.salary.lenErrMsg}")
     private String salary;
 
     @Basic(optional = false)

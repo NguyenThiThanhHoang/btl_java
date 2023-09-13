@@ -25,15 +25,15 @@ Click nbfs://nbhost/SystemFileSystem/Templates/XML/XMLDocument.xml to edit this 
                        value="/WEB-INF/pages/index.jsp" />
     </definition>
 
-    <definition name="login" extends="baseLayout">
-        <put-attribute name="title" value="Đăng nhập" />
-        <put-attribute name="content"
-                       value="/WEB-INF/pages/login.jsp" />
-    </definition>
     <definition name="addUser" extends="baseLayout">
         <put-attribute name="title" value="Thêm người dùng" />
         <put-attribute name="content"
                        value="/WEB-INF/pages/addUser.jsp" />
+    </definition>
+    <definition name="login" extends="baseLayout">
+        <put-attribute name="title" value="Đăng nhập" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/login.jsp" />
     </definition>
     
 </tiles-definitions>
