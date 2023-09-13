@@ -82,7 +82,7 @@ public class RecruitmentTag implements Serializable{
 
     @Id
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "recuitment_id", referencedColumnName = "id")
+    @JoinColumn(name = "recruitment_id", referencedColumnName = "id")
     private RecruitmentNews recruitment;
 
     @Id

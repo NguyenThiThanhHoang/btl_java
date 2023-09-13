@@ -63,7 +63,7 @@ public class RecruitmentNews implements Serializable {
     private String description;
 
     @Basic(optional = false)
-    @Column(name = "job_vanacy")
+    @Column(name = "job_vacancy")
     @Size(min = 10, max = 50, message = "{recruitment.jobVanacy.lenErrMsg}")
     private String jobVanacy;
 
@@ -78,7 +78,7 @@ public class RecruitmentNews implements Serializable {
     private Date deadline;
 
     @Basic(optional = false)
-    @Column(name = "created_day")
+    @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDay;
 

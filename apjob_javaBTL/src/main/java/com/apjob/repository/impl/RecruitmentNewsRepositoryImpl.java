@@ -109,6 +109,7 @@ public class RecruitmentNewsRepositoryImpl implements RecruitmentNewsRepository 
                 s.update(r);
             }
 
+
             return true;
         } catch (HibernateException ex) {
             ex.printStackTrace();

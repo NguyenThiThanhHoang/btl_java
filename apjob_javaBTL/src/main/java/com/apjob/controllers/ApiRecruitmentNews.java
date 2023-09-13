@@ -37,12 +37,12 @@ public class ApiRecruitmentNews {
     @Autowired
     private RecruitmentService recruitmentService;
 
-    @PostMapping(path = "/addOrUpdateRecruitment/{recruimentId}/",
-            consumes = {MediaType.APPLICATION_JSON_VALUE},
+    @PostMapping(path = "/addOrUpdateRecruitment/",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, 
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
-    public ResponseEntity<RecruitmentNews> addOrUpdateRecruitment(@RequestBody RecruitmentNews r, @PathVariable(value = "recruitmentId") int recruitmentId, @RequestParam(name = "tags", required = false) List<String> tagIds) {
-        RecruitmentNews recruitment = this.recruitmentService.addOrUpdateRecruitmentNews(r, recruitmentId, tagIds);
+    public ResponseEntity<RecruitmentNews> addOrUpdateRecruitment(@RequestParam Map<String, String> params) {
+        RecruitmentNews recruitment = this.recruitmentService.addOrUpdateRecruitmentNews(params);
         return new ResponseEntity<>(recruitment, HttpStatus.CREATED);
     }
 
