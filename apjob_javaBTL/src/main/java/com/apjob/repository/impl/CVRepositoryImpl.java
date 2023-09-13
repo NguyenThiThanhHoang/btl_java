@@ -39,42 +39,12 @@ public class CVRepositoryImpl implements CVRepository {
     private Environment env;
 
     @Override
-    public List<CV> getCVs(Map<String, String> params) {
-        Session session = this.factoryBean.getObject().getCurrentSession();
-        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-        CriteriaQuery<Rating> criteriaQuery = criteriaBuilder.createQuery(Rating.class);
-        Root root = criteriaQuery.from(Rating.class);
-        criteriaQuery.select(root);
-
-        if (params != null) {
-            List<Predicate> predicates = new ArrayList<>();
-            String candidateId = params.get("candidateId");
-            String nameCV = params.get("nameCV");
-
-            if (candidateId != null && !candidateId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("candidate_id"), "=" + candidateId));
-            }
-
-            if (nameCV != null && !nameCV.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("name_cv"), String.format("%%%s%%", nameCV)));
-            }
-
-            criteriaQuery.where(predicates.toArray(new Predicate[0]));
-        }
-
-        criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
-        Query query = session.createQuery(criteriaQuery);
-
-        if (params != null) {
-            String page = params.get("page");
-            if (page != null) {
-                int pageSize = Integer.parseInt(this.env.getProperty("PAGE_SIZE_LARGE_ITEM"));
-                query.setFirstResult((Integer.parseInt(page) - 1) * pageSize);
-                query.setMaxResults(pageSize);
-            }
-        }
-
-        return query.getResultList();
+    public List<CV> getCVs(int candidateId) {
+        Session s = this.factoryBean.getObject().getCurrentSession();
+        Query q = s.createQuery("From Comment Where candidate.id=:id");
+        q.setParameter("id", candidateId);
+        
+        return q.getResultList();
     }
 
     @Override

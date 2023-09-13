@@ -5,11 +5,17 @@
 package com.apjob.controllers;
 
 import com.apjob.components.JwtService;
+import com.apjob.pojo.CV;
 import com.apjob.pojo.Candidate;
+import com.apjob.pojo.CandidateTag;
 import com.apjob.pojo.Company;
+import com.apjob.pojo.CompanyTag;
 import com.apjob.pojo.Employer;
+import com.apjob.pojo.Rating;
 import com.apjob.pojo.User;
+import com.apjob.service.CVService;
 import com.apjob.service.LocationService;
+import com.apjob.service.RatingService;
 import com.apjob.service.UserService;
 import java.security.Principal;
 import java.util.List;
@@ -42,63 +48,103 @@ public class ApiUserController {
 
     @Autowired
     private UserService userService;
-    
+
     @Autowired
     private JwtService jwtService;
+
+    @Autowired
+    private RatingService raService;
+    
+    @Autowired
+    private CVService cvServer;
 
     @PostMapping("/login/")
     @CrossOrigin
     public ResponseEntity<String> login(@RequestBody User user) {
         if (this.userService.authUser(user.getEmail(), user.getPassword()) == true) {
             String token = this.jwtService.generateTokenLogin(user.getEmail());
-            
+
             return new ResponseEntity<>(token, HttpStatus.OK);
         }
 
         return new ResponseEntity<>("error", HttpStatus.BAD_REQUEST);
     }
-    
+
     @PostMapping("/test/")
     @CrossOrigin(origins = {"127.0.0.1:5500"})
     public ResponseEntity<String> test(Principal pricipal) {
         return new ResponseEntity<>("SUCCESSFUL", HttpStatus.OK);
     }
-    
-    
+
     //Nếu là add thì truyền tham số userId = 0
-    @PostMapping(path = "/addOrUpdateUser/{userId}", 
-            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE}, 
+    @PostMapping(path = "/addOrUpdateUser/",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @CrossOrigin
-    public ResponseEntity<User> addOrUpdateUser(@RequestParam Map<String, String> params, @RequestPart MultipartFile avatar, @RequestPart MultipartFile avatarCompany, @PathVariable int userId) {
-        User user = this.userService.addOrUpdateUserApi(params, avatar, avatarCompany, userId);
+    public ResponseEntity<User> addOrUpdateUser(@RequestParam Map<String, String> params, @RequestPart MultipartFile avatar, @RequestPart MultipartFile avatarCompany) {
+        User user = this.userService.addOrUpdateUserApi(params, avatar, avatarCompany);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
-    
+
     @GetMapping(path = "/current-user/", produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin
     public ResponseEntity<User> details(Principal user) {
         User u = this.userService.getUserByUn(user.getName());
         return new ResponseEntity<>(u, HttpStatus.OK);
     }
-    
+
     @GetMapping("/users/")
     public ResponseEntity<List<User>> listUser(Map<String, String> params) {
         return new ResponseEntity<>(this.userService.getAdmins(params), HttpStatus.OK);
     }
-    
+
     @GetMapping("/candidates/")
     public ResponseEntity<List<Candidate>> listCandidate(Map<String, String> params) {
         return new ResponseEntity<>(this.userService.getCandidates(params), HttpStatus.OK);
     }
-    
+
     @GetMapping("/employers/")
     public ResponseEntity<List<Employer>> listEmployer(Map<String, String> params) {
         return new ResponseEntity<>(this.userService.getEmployers(params), HttpStatus.OK);
     }
-    
+
     @GetMapping("/companys/")
     public ResponseEntity<List<Company>> listCompany(Map<String, String> params) {
         return new ResponseEntity<>(this.userService.getCompanys(params), HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/candidateTags/",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    @CrossOrigin
+    public ResponseEntity<List<CandidateTag>> addCandidateTags(@RequestParam Map<String, String> params) {
+        List<CandidateTag> candidateTags = this.userService.addCandidateTags(params);
+        return new ResponseEntity<>(candidateTags, HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "/companyTags/",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    @CrossOrigin
+    public ResponseEntity<List<CompanyTag>> addCompanyTags(@RequestParam Map<String, String> params) {
+        List<CompanyTag> companyTags = this.userService.addCompanyTags(params);
+        return new ResponseEntity<>(companyTags, HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "/ratings/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin
+    public ResponseEntity<Rating> addRating(@RequestBody Rating rating) {
+        Rating r = this.raService.addRating(rating);
+
+        return new ResponseEntity<>(r, HttpStatus.CREATED);
+    }
+
+    @PostMapping(path = "/addCV/",
+            consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    @CrossOrigin
+    public ResponseEntity<CV> addOrUpdateCV(@RequestParam Map<String, String> params, @RequestPart MultipartFile file) {
+        CV cv = this.cvServer.addOrUpdateCV(params, file);
+        return new ResponseEntity<>(cv, HttpStatus.CREATED);
     }
 }

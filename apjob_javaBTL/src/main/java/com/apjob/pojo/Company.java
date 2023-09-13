@@ -52,7 +52,6 @@ public class Company implements Serializable{
     
     @Basic(optional = false)
     @Column(name = "name")
-    @NotNull(message = "{company.name.notNullMsg}")
     @Size(min = 5, max = 50, message = "{company.name.lenErrMsg}")
     private String nameCompany;
     

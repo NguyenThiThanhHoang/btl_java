@@ -31,10 +31,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @ComponentScan(basePackages = {
     "com.apjob.controllers",
     "com.apjob.repository",
-    "com.apjob.service", 
+    "com.apjob.service",
     "com.apjob.components"})
 @Order(1)
-public class JwtSecurityConfig extends WebSecurityConfigurerAdapter{
+public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
+
     @Bean
     public JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter() throws Exception {
         JwtAuthenticationTokenFilter jwtAuthenticationTokenFilter = new JwtAuthenticationTokenFilter();
@@ -62,13 +63,22 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter{
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().ignoringAntMatchers("/api/**");
         http.authorizeRequests().antMatchers("/api/login/").permitAll();
+
         http.authorizeRequests().antMatchers("/api/locations/").permitAll();
         http.authorizeRequests().antMatchers("/api/tags/**").permitAll();
         http.authorizeRequests().antMatchers("/api/companys/").permitAll();
         http.authorizeRequests().antMatchers("/api/users/").permitAll();
-        http.authorizeRequests().antMatchers("/api/addOrUpdateRecruitment/")
-                .access("hasRole('EMPLOYER')");
+        http.authorizeRequests().antMatchers("/api/addOrUpdateUser/").permitAll();
+        http.authorizeRequests().antMatchers("/api/recruitmentNews/**").permitAll();
         http.authorizeRequests().antMatchers("/current-user/").permitAll();
+
+        http.authorizeRequests().antMatchers("/api/addOrUpdateRecruitment/").access("hasRole('EMPLOYER')");
+        http.authorizeRequests().antMatchers("/api/companyTags/").access("hasRole('EMPLOYER')");
+
+        http.authorizeRequests().antMatchers("/api/candidateTags/").access("hasRole('CANDIDATE')");
+        http.authorizeRequests().antMatchers("/api/ratings/").access("hasRole('CANDIDATE')");
+        http.authorizeRequests().antMatchers("/api/addCV/").access("hasRole('CANDIDATE')");
+
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/**/comments/").permitAll();
         http.antMatcher("/api/**").httpBasic().authenticationEntryPoint(restServicesEntryPoint()).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()

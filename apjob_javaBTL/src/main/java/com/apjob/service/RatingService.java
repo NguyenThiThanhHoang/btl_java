@@ -2,20 +2,18 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Interface.java to edit this template
  */
-package com.apjob.repository;
+package com.apjob.service;
 
 import com.apjob.pojo.Rating;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
  * @author ASUS
  */
-public interface RatingRepository {
-    List<Rating> getRatings(int comapnyId);
-    int countRatings();
-    Rating addOrUpdateRating(Rating r);
-    Rating getRatingById(int id);
-    boolean deleteRating(int id);
+public interface RatingService {
+
+    List<Rating> getRatings(int companyId);
+
+    Rating addRating(Rating r);
 }

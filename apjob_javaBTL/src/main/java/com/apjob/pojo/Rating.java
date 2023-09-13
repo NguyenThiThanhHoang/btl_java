@@ -5,6 +5,7 @@
 package com.apjob.pojo;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,6 +18,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -30,7 +33,7 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Rating.findAll", query = "SELECT r FROM Rating r"),
     @NamedQuery(name = "Rating.findById", query = "SELECT r FROM Rating r WHERE r.id = :id"),
     @NamedQuery(name = "Rating.findByComment", query = "SELECT r FROM Rating r WHERE r.comment = :comment")})
-public class Rating implements Serializable{
+public class Rating implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -38,30 +41,32 @@ public class Rating implements Serializable{
     @Basic(optional = false)
     @Column(name = "id")
     private Integer id;
-    
+
     @Basic(optional = false)
     @Column(name = "comment")
     private String comment;
-   
-   
+
+    @Basic(optional = false)
+    @Column(name = "created_date")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDay;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "candidate_id", referencedColumnName = "id")
     private Candidate candidate;
-    
-    
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private Company company;
-    
-    public Rating(){
-        
+
+    public Rating() {
+
     }
-    
-    public Rating(Integer id){
+
+    public Rating(Integer id) {
         this.id = id;
     }
-    
-    
+
     public void setComment(String comment) {
         this.comment = comment;
     }
@@ -93,7 +98,7 @@ public class Rating implements Serializable{
     public void setCompany(Company company) {
         this.company = company;
     }
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -133,6 +138,18 @@ public class Rating implements Serializable{
         this.id = id;
     }
 
-   
-    
+    /**
+     * @return the createdDay
+     */
+    public Date getCreatedDay() {
+        return createdDay;
+    }
+
+    /**
+     * @param createdDay the createdDay to set
+     */
+    public void setCreatedDay(Date createdDay) {
+        this.createdDay = createdDay;
+    }
+
 }

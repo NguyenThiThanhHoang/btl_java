@@ -5,7 +5,9 @@
 package com.apjob.service;
 
 import com.apjob.pojo.Candidate;
+import com.apjob.pojo.CandidateTag;
 import com.apjob.pojo.Company;
+import com.apjob.pojo.CompanyTag;
 import com.apjob.pojo.Employer;
 import com.apjob.pojo.User;
 import java.util.List;
@@ -35,6 +37,10 @@ public interface UserService extends UserDetailsService{
     User getUserByUn(String username);
     boolean authUser(String username, String password);
     
-    User addOrUpdateUserApi(Map<String, String> params, MultipartFile avatar, MultipartFile avatarCompany, int userId);
+    User addOrUpdateUserApi(Map<String, String> params, MultipartFile avatar, MultipartFile avatarCompany);
+    
+    List<CandidateTag> addCandidateTags (Map<String, String> params);
+    
+    List<CompanyTag> addCompanyTags(Map<String, String> params);
     
 }

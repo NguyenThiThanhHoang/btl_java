@@ -32,9 +32,8 @@ import org.springframework.web.multipart.MultipartFile;
     @NamedQuery(name = "CV.findAll", query = "SELECT c FROM CV c"),
     @NamedQuery(name = "CV.findById", query = "SELECT c FROM CV c WHERE c.id = :id"),
     @NamedQuery(name = "CV.findByName", query = "SELECT c FROM CV c WHERE c.nameCV = :nameCV")})
-public class CV implements Serializable{
+public class CV implements Serializable {
 
-   
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,25 +43,25 @@ public class CV implements Serializable{
     @Basic(optional = false)
     @Column(name = "name_cv")
     private String nameCV;
+
+    @Column(name = "link_cv")
+    private String linkCV;
     @Transient
     private MultipartFile file;
-    
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "candidate_id", referencedColumnName = "id")
     private Candidate candidate;
-    
-    
-    public CV(){
-        
+
+    public CV() {
+
     }
-    
-    public CV(Integer id){
+
+    public CV(Integer id) {
         this.id = id;
     }
-    
-    
-     /**
+
+    /**
      * @return the id
      */
     public Integer getId() {
@@ -90,7 +89,6 @@ public class CV implements Serializable{
         this.file = file;
     }
 
-    
     /**
      * @return the candidate
      */
@@ -104,8 +102,7 @@ public class CV implements Serializable{
     public void setCandidate(Candidate candidate) {
         this.candidate = candidate;
     }
-    
-    
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -145,6 +142,18 @@ public class CV implements Serializable{
         this.nameCV = nameCV;
     }
 
-  
-    
+    /**
+     * @return the linkCV
+     */
+    public String getLinkCV() {
+        return linkCV;
+    }
+
+    /**
+     * @param linkCV the linkCV to set
+     */
+    public void setLinkCV(String linkCV) {
+        this.linkCV = linkCV;
+    }
+
 }

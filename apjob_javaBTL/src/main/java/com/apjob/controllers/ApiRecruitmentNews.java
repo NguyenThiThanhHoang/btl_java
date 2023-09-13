@@ -46,14 +46,15 @@ public class ApiRecruitmentNews {
         return new ResponseEntity<>(recruitment, HttpStatus.CREATED);
     }
 
-    @RequestMapping(path = "/recruitmentNews/{recruimentId}/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(path = "/recruitmentNews/{recruitmentId}/", produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin
     public ResponseEntity<RecruitmentNews> details(@PathVariable(value = "recruitmentId") int id) {
         return new ResponseEntity<>(this.recruitmentService.getRecruitmentNewsById(id), HttpStatus.OK);
     }
 
-    @GetMapping("/recruitments/")
-    public ResponseEntity<List<RecruitmentNews>> listRecruitmentNews(Map<String, String> params) {
+    @RequestMapping("/recruitments/")
+    @CrossOrigin
+    public ResponseEntity<List<RecruitmentNews>> listRecruitmentNews(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.recruitmentService.getRecruitmentNews(params), HttpStatus.OK);
     }
     

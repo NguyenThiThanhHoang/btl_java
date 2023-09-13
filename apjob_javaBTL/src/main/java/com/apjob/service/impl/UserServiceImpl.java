@@ -6,14 +6,20 @@ package com.apjob.service.impl;
 
 import com.apjob.formatters.LocationFormatter;
 import com.apjob.pojo.Candidate;
+import com.apjob.pojo.CandidateTag;
 import com.apjob.pojo.Company;
+import com.apjob.pojo.CompanyTag;
 import com.apjob.pojo.Employer;
 import com.apjob.pojo.Location;
+import com.apjob.pojo.Tag;
 import com.apjob.pojo.User;
 import com.apjob.repository.CandidateRepository;
+import com.apjob.repository.CandidateTagRepository;
 import com.apjob.repository.CompanyRepository;
+import com.apjob.repository.CompanyTagRepository;
 import com.apjob.repository.EmployerRepository;
 import com.apjob.repository.LocationRepository;
+import com.apjob.repository.TagRepository;
 import com.apjob.repository.UserRepository;
 import com.apjob.service.UserService;
 import com.cloudinary.Cloudinary;
@@ -22,6 +28,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -30,8 +37,10 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -66,6 +75,15 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private LocationRepository loRepo;
 
+    @Autowired
+    public CandidateTagRepository candidateTagRepo;
+    
+    @Autowired
+    public CompanyTagRepository comTagRepo;
+
+    @Autowired
+    private TagRepository tagRepo;
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User u = this.userRepo.getUserByEmail(username);
@@ -94,6 +112,8 @@ public class UserServiceImpl implements UserService {
         Employer employer = new Employer();
         Candidate candidate = new Candidate();
         Boolean addResult = false;
+        Boolean addUserResult = false;
+        int userId;
 
         if (!u.getFile().isEmpty()) {
             try {
@@ -115,28 +135,42 @@ public class UserServiceImpl implements UserService {
 
         String pass = u.getPassword();
         u.setPassword(this.passEncoder.encode(pass));
-        Boolean addUserResult = userRepo.addOrUpdateUser(u);
-        int userId = u.getId();
 
         if (u.getUserRole().toString().equals("CANDIDATE")) {
-            candidate.setId(userId);
-            candidate.setLocation(u.getLocation());
-            candidate.setSchoolName(u.getSchoolName());
-            candidate.setBirthDay(u.getBirthDay());
-            addResult = caRepo.addOrUpdateCandidate(candidate);
+            addUserResult = userRepo.addOrUpdateUser(u);
+            userId = u.getId();
+            if (addUserResult) {
+                candidate.setId(userId);
+                candidate.setLocation(u.getLocation());
+                candidate.setSchoolName(u.getSchoolName());
+                candidate.setBirthDay(u.getBirthDay());
+                addResult = caRepo.addOrUpdateCandidate(candidate);
+            }
             return addResult;
-        } else if (u.getUserRole().toString().equals("EMPLOYER")) {
-            company.setNameCompany(u.getNameCompany());
-            company.setAddress(u.getAddress());
-            company.setTax(u.getTax());
-            company.setEmailCompany(u.getEmailCompany());
-            company.setPhoneCompany(u.getPhoneCompany());
-            company.setDescription(u.getDescription());
-            comRepo.addOrUpdateCompany(company);
 
-            employer.setId(userId);
-            employer.setCompany(company);
-            addResult = emRepo.addOrUpdateEmployer(employer);
+        } else if (u.getUserRole().toString().equals("EMPLOYER")) {
+            Company checkEmailCompany = this.comRepo.getCompanyByEmail(u.getEmailCompany());
+            Company checkTaxCompany = this.comRepo.getCompanyByTax(u.getTax());
+            if (checkEmailCompany == null && checkTaxCompany == null) {
+                addUserResult = userRepo.addOrUpdateUser(u);
+                userId = u.getId();
+                if (addUserResult) {
+
+                    company.setNameCompany(u.getNameCompany());
+                    company.setAddress(u.getAddress());
+                    company.setTax(u.getTax());
+                    company.setEmailCompany(u.getEmailCompany());
+                    company.setPhoneCompany(u.getPhoneCompany());
+                    company.setDescription(u.getDescription());
+                    comRepo.addOrUpdateCompany(company);
+
+                    employer.setId(userId);
+                    employer.setCompany(company);
+                    addResult = emRepo.addOrUpdateEmployer(employer);
+
+                }
+
+            }
             return addResult;
         } else {
             return addUserResult;
@@ -184,16 +218,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User addOrUpdateUserApi(Map<String, String> params, MultipartFile avatar, MultipartFile avatarCompany, int userId) {
+    public User addOrUpdateUserApi(Map<String, String> params, MultipartFile avatar, MultipartFile avatarCompany) {
         Company company = new Company();
         Employer employer = new Employer();
         Candidate candidate = new Candidate();
         Location location = new Location();
         User user = new User();
         Boolean addResult = false;
-        
+
+        int userId = Integer.parseInt(params.get("userId"));
+
         //!= 0 là update
-        if (userId != 0){
+        if (userId != 0) {
             user.setId(userId);
             candidate.setId(userId);
             employer.setId(userId);
@@ -216,7 +252,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        if (user.getUserRole() == "CANDIDATE") {
+        if (user.getUserRole().equals("ROLE_CANDIDATE")) {
             user.setActive(true);
             addResult = userRepo.addOrUpdateUser(user);
             if (addResult) {
@@ -241,27 +277,109 @@ public class UserServiceImpl implements UserService {
                 return user;
             }
 
-        } else if (user.getUserRole() == "EMPLOYER") {
-            user.setActive(false);
-            addResult = userRepo.addOrUpdateUser(user);
-            if (addResult) {
-                company.setNameCompany(params.get("nameCompany"));
-                company.setAddress(params.get("address"));
-                company.setTax(Integer.parseInt(params.get("tax")));
-                company.setEmailCompany(params.get("emailCommpany"));
-                company.setPhoneCompany(params.get("phoneCompany"));
-                company.setDescription(params.get("des"));
-                comRepo.addOrUpdateCompany(company);
+        } else if (user.getUserRole().equals("ROLE_EMPLOYER")) {
+            Company checkEmailCompany = this.comRepo.getCompanyByEmail(params.get("emailCompany"));
+            Company checkTaxCompany = this.comRepo.getCompanyByTax(Integer.parseInt(params.get("tax")));
 
-                employer.setId(user.getId());
-                employer.setCompany(company);
-                emRepo.addOrUpdateEmployer(employer);
-                return user;
-            } else{
-                return user;
+            user.setActive(false);
+
+            if (checkEmailCompany == null && checkTaxCompany == null) {
+                addResult = userRepo.addOrUpdateUser(user);
+                if (addResult) {
+                    if (!avatarCompany.isEmpty()) {
+                        try {
+                            Map res = this.cloudinary.uploader().upload(avatar.getBytes(),
+                                    ObjectUtils.asMap("resource_type", "auto"));
+                            company.setAvatar(res.get("secure_url").toString());
+                        } catch (IOException ex) {
+                            Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                    company.setNameCompany(params.get("nameCompany"));
+                    company.setAddress(params.get("address"));
+                    company.setTax(Integer.parseInt(params.get("tax")));
+                    company.setEmailCompany(params.get("emailCompany"));
+                    company.setPhoneCompany(params.get("phoneCompany"));
+                    company.setDescription(params.get("des"));
+                    comRepo.addOrUpdateCompany(company);
+
+                    employer.setId(user.getId());
+                    employer.setCompany(company);
+                    emRepo.addOrUpdateEmployer(employer);
+                    return user;
+                } else {
+                    return user;
+                }
             }
+
         }
         return user;
+    }
+
+    @Override
+    public List<CandidateTag> addCandidateTags(Map<String, String> params) {
+        CandidateTag candidateTag = new CandidateTag();
+        List<CandidateTag> candidateTags = new ArrayList<>();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User u = this.userRepo.getUserByEmail(authentication.getName());
+        Candidate candidate = this.caRepo.getCandidateById(u.getId());
+
+        candidateTag.setCandidate(candidate);
+
+        String tagIds = params.get("tags");
+        String[] tagIdArray = tagIds.split(",");
+
+        for (String tagId : tagIdArray) {
+            try {
+                Integer id = Integer.parseInt(tagId);
+                Tag tag = this.tagRepo.getTagById(id);
+                if (tag != null) {
+                    candidateTag.setTag(tag);
+                    candidateTag.setTagName(tag.getName());
+                    this.candidateTagRepo.addCandidateTag(candidateTag);
+                    candidateTags.add(candidateTag);
+                }
+            } catch (NumberFormatException e) {
+                // Xử lý nếu có lỗi chuyển đổi
+                e.printStackTrace();
+            }
+        }
+
+        return candidateTags;
+    }
+
+    @Override
+    public List<CompanyTag> addCompanyTags(Map<String, String> params) {
+        CompanyTag companyTag = new CompanyTag();
+        List<CompanyTag> companyTags = new ArrayList<>();
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User u = this.userRepo.getUserByEmail(authentication.getName());
+        Company company =this.emRepo.getEmployerById(u.getId()).getCompany();
+
+        companyTag.setCompany(company);
+
+        String tagIds = params.get("tags");
+        String[] tagIdArray = tagIds.split(",");
+
+        for (String tagId : tagIdArray) {
+            try {
+                Integer id = Integer.parseInt(tagId);
+                Tag tag = this.tagRepo.getTagById(id);
+                if (tag != null) {
+                    companyTag.setTag(tag);
+                    companyTag.setTagName(tag.getName());
+                    this.comTagRepo.addCompanyTag(companyTag);
+                    companyTags.add(companyTag);
+                }
+            } catch (NumberFormatException e) {
+                // Xử lý nếu có lỗi chuyển đổi
+                e.printStackTrace();
+            }
+        }
+
+        return companyTags;
     }
 
 }

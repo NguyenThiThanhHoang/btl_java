@@ -6,14 +6,8 @@ package com.apjob.repository.impl;
 
 import com.apjob.pojo.Rating;
 import com.apjob.repository.RatingRepository;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,49 +31,14 @@ public class RatingRepositoryImpl implements RatingRepository{
     private Environment env;
 
     @Override
-    public List<Rating> getRatings(Map<String, String> params) {
-        Query query = null;
-        try {
-            String candidateId = params.get("candidateId");
-            String companyId = params.get("companyId");
-            
-            
-            Session session = this.factoryBean.getObject().getCurrentSession();
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<Rating> criteriaQuery = criteriaBuilder.createQuery(Rating.class);
-            Root root = criteriaQuery.from(Rating.class);
-            criteriaQuery.select(root);
-
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (candidateId != null && !candidateId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("candidate_id"), "=" + candidateId));
-            }
-
-            if (companyId != null && !companyId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("company_id"), "=" + companyId));
-            }
-
-            if (!predicates.isEmpty()) {
-                criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-            }
-
-            criteriaQuery.orderBy(criteriaBuilder.desc(root.get("id")));
-            query = session.createQuery(criteriaQuery);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (params != null) {
-            String page = params.get("page");
-            if (page != null) {
-                int pageSize = Integer.parseInt(this.env.getProperty("PAGE_SIZE_LARGE_ITEM"));
-                query.setFirstResult((Integer.parseInt(page) - 1) * pageSize);
-                query.setMaxResults(pageSize);
-            }
-        }
+    public List<Rating> getRatings(int comapnyId) {
         
-        return query.getResultList();
+        Session s = this.factoryBean.getObject().getCurrentSession();
+        Query q = s.createQuery("From Comment Where company.id=:id");
+        q.setParameter("id", comapnyId);
+        
+        return q.getResultList();
+        
     }
 
     @Override
@@ -91,7 +50,7 @@ public class RatingRepositoryImpl implements RatingRepository{
     }
 
     @Override
-    public boolean addOrUpdateRating(Rating r) {
+    public Rating addOrUpdateRating(Rating r) {
         Session s = this.factoryBean.getObject().getCurrentSession();
         try {
             if (r.getId() == null) {
@@ -100,10 +59,10 @@ public class RatingRepositoryImpl implements RatingRepository{
                 s.update(r);
             }
 
-            return true;
+            return r;
         } catch (HibernateException ex) {
             ex.printStackTrace();
-            return false;
+            return null;
         }
     }
 
