@@ -49,38 +49,3 @@ Click nbfs://nbhost/SystemFileSystem/Templates/ClientSide/css.css to edit this t
     width: 200px; /* Độ rộng của mini-menu khi được mở */
 }
 
-.open .menu-list {
-    display: block;
-}
-
-.container {
-    display: flex;
-}
-
-/* Thiết lập phong cách cho sidebar */
-.sidebar {
-    width: 250px;
-    background-color: #333;
-    color: #fff;
-    padding: 20px;
-}
-
-.sidebar ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-.sidebar ul li {
-    margin-bottom: 10px;
-}
-
-.sidebar ul li a {
-    text-decoration: none;
-    color: #fff;
-}
-
-/* Thiết lập phong cách cho nội dung */
-.content {
-    flex: 1;
-    padding: 20px;
-}

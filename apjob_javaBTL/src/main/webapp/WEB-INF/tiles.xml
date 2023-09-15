@@ -42,5 +42,11 @@ Click nbfs://nbhost/SystemFileSystem/Templates/XML/XMLDocument.xml to edit this 
                        value="/WEB-INF/pages/profile.jsp" />
     </definition>
     
+    <definition name="stats" extends="baseLayout">
+        <put-attribute name="title" value="Báo cáo" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/stats.jsp" />
+    </definition>
+    
 </tiles-definitions>
 

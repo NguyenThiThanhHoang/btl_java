@@ -46,7 +46,7 @@
                                     <a class="nav-link" href="<c:url value="/addUser" />">Thêm người dùng</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link text-danger" href="<c:url value="/baocao" />">Báo cáo</a>
+                                    <a class="nav-link text-danger" href="<c:url value="/stats" />">Báo cáo</a>
                                 </li>
                             </c:if>
 
