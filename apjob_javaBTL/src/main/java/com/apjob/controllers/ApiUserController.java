@@ -7,6 +7,7 @@ package com.apjob.controllers;
 import com.apjob.components.JwtService;
 import com.apjob.pojo.CV;
 import com.apjob.pojo.Candidate;
+import com.apjob.pojo.CandidateRecruitment;
 import com.apjob.pojo.CandidateTag;
 import com.apjob.pojo.Company;
 import com.apjob.pojo.CompanyTag;
@@ -14,6 +15,7 @@ import com.apjob.pojo.Employer;
 import com.apjob.pojo.Rating;
 import com.apjob.pojo.User;
 import com.apjob.service.CVService;
+import com.apjob.service.CandidateRecruitmentServer;
 import com.apjob.service.LocationService;
 import com.apjob.service.RatingService;
 import com.apjob.service.UserService;
@@ -54,7 +56,7 @@ public class ApiUserController {
 
     @Autowired
     private RatingService raService;
-    
+
     @Autowired
     private CVService cvServer;
 
@@ -98,8 +100,9 @@ public class ApiUserController {
         return new ResponseEntity<>(this.userService.getAdmins(params), HttpStatus.OK);
     }
 
-    @GetMapping("/candidates/")
-    public ResponseEntity<List<Candidate>> listCandidate(Map<String, String> params) {
+    @RequestMapping(path = "/candidates/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<Candidate>> listCandidate(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.userService.getCandidates(params), HttpStatus.OK);
     }
 
@@ -139,6 +142,12 @@ public class ApiUserController {
         return new ResponseEntity<>(r, HttpStatus.CREATED);
     }
 
+    @RequestMapping(path = "/company/{companyId}/rating/", produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin
+    public ResponseEntity<List<Rating>> listRatingForCompany(@PathVariable(value = "companyId") int id) {
+        return new ResponseEntity<>(this.raService.getRatings(id), HttpStatus.OK);
+    }
+
     @PostMapping(path = "/addCV/",
             consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
             produces = {MediaType.APPLICATION_JSON_VALUE})
@@ -147,4 +156,10 @@ public class ApiUserController {
         CV cv = this.cvServer.addOrUpdateCV(params, file);
         return new ResponseEntity<>(cv, HttpStatus.CREATED);
     }
+
+    @GetMapping("/cvs/")
+    public ResponseEntity<List<CV>> listCV() {
+        return new ResponseEntity<>(this.cvServer.getCVs(), HttpStatus.OK);
+    }
+
 }

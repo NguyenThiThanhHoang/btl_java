@@ -41,7 +41,7 @@ public class CVRepositoryImpl implements CVRepository {
     @Override
     public List<CV> getCVs(int candidateId) {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        Query q = s.createQuery("From Comment Where candidate.id=:id");
+        Query q = s.createQuery("From CV Where candidate.id=:id");
         q.setParameter("id", candidateId);
         
         return q.getResultList();

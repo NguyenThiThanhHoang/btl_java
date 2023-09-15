@@ -13,7 +13,7 @@ import java.util.Map;
  * @author ASUS
  */
 public interface CandidateRecruitmentRepository {
-    List<CandidateRecruitment> getCandidateRecruitments(Map<String, String> params);
+    List<CandidateRecruitment> getCandidateRecruitments(int recruitmentId);
     int countCandidateRecruitments(Map<String, String> params);
     boolean addCandidateRecruitment(CandidateRecruitment c);
     List<CandidateRecruitment> getCandidateRecruitmentById(int id); //get recuitmentID

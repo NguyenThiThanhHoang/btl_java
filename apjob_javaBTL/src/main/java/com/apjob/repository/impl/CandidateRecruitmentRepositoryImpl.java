@@ -5,7 +5,12 @@
 package com.apjob.repository.impl;
 
 import com.apjob.pojo.CandidateRecruitment;
+import com.apjob.pojo.Employer;
+import com.apjob.pojo.User;
 import com.apjob.repository.CandidateRecruitmentRepository;
+import com.apjob.repository.EmployerRepository;
+import com.apjob.repository.RecruitmentNewsRepository;
+import com.apjob.repository.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,52 +41,34 @@ public class CandidateRecruitmentRepositoryImpl implements CandidateRecruitmentR
 
     @Autowired
     private LocalSessionFactoryBean factoryBean;
+
     @Autowired
     private Environment env;
 
+    @Autowired
+    private RecruitmentNewsRepository reRepo;
+
+    @Autowired
+    private UserRepository userRepo;
+
+    @Autowired
+    private EmployerRepository emRepo;
+
     @Override
-    public List<CandidateRecruitment> getCandidateRecruitments(Map<String, String> params) {
-        Query query = null;
-        try {
-            String candidateId = params.get("candidateId");
-            String recruitmentId = params.get("recruitmentId");
+    public List<CandidateRecruitment> getCandidateRecruitments(int recruitmentId) {
+        List<CandidateRecruitment> candidateRecruitments = new ArrayList<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User u = this.userRepo.getUserByEmail(authentication.getName());
+        Employer e = this.emRepo.getEmployerById(u.getId());
 
-            Session session = this.factoryBean.getObject().getCurrentSession();
-            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
-            CriteriaQuery<CandidateRecruitment> criteriaQuery = criteriaBuilder.createQuery(CandidateRecruitment.class);
-            Root root = criteriaQuery.from(CandidateRecruitment.class);
-            criteriaQuery.select(root);
-
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (candidateId != null && !candidateId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("candidate_id"), "=" + candidateId));
-            }
-
-            if (recruitmentId != null && !recruitmentId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("recuitment_id"), "=" + recruitmentId));
-            }
-
-            if (!predicates.isEmpty()) {
-                criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
-            }
-
-            criteriaQuery.orderBy(criteriaBuilder.desc(root.get("recuitment_id")));
-            query = session.createQuery(criteriaQuery);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (this.reRepo.getRecruitmentNewsById(recruitmentId).getEmployer().getId() == e.getId()) {
+            Session s = this.factoryBean.getObject().getCurrentSession();
+            Query q = s.createQuery("From CandidateRecruitment Where recruitment.id=:id");
+            q.setParameter("id", recruitmentId);
+            candidateRecruitments = q.getResultList();
         }
 
-        if (params != null) {
-            String page = params.get("page");
-            if (page != null) {
-                int pageSize = Integer.parseInt(this.env.getProperty("PAGE_SIZE_LARGE_ITEM"));
-                query.setFirstResult((Integer.parseInt(page) - 1) * pageSize);
-                query.setMaxResults(pageSize);
-            }
-        }
-
-        return query.getResultList();
+        return candidateRecruitments;
     }
 
     @Override
@@ -147,8 +136,8 @@ public class CandidateRecruitmentRepositoryImpl implements CandidateRecruitmentR
         Session s = this.factoryBean.getObject().getCurrentSession();
         List<CandidateRecruitment> candidateRecruitments = this.getCandidateRecruitmentById(id);
         try {
-            for (CandidateRecruitment c : candidateRecruitments){
-                 s.delete(c);
+            for (CandidateRecruitment c : candidateRecruitments) {
+                s.delete(c);
             }
             return candidateRecruitments.size() > 0;
         } catch (HibernateException ex) {

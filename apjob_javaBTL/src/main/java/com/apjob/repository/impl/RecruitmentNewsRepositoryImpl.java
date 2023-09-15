@@ -6,6 +6,7 @@ package com.apjob.repository.impl;
 
 import com.apjob.pojo.CV;
 import com.apjob.pojo.RecruitmentNews;
+import com.apjob.pojo.RecruitmentTag;
 import com.apjob.repository.RecruitmentNewsRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,8 @@ import java.util.Map;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.HibernateException;
@@ -55,22 +58,28 @@ public class RecruitmentNewsRepositoryImpl implements RecruitmentNewsRepository 
 
             String jobVacancy = params.get("jobVacancy");
             if (jobVacancy != null && !jobVacancy.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("job_vacancy"), String.format("%%%s%%", jobVacancy)));
+                predicates.add(criteriaBuilder.like(root.get("jobVacancy"), String.format("%%%s%%", jobVacancy)));
             }
 
-            String location = params.get("location");
+            String location = params.get("locationId");
             if (location != null && !location.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("location").get("location_name"), String.format("%%%s%%", location)));
+                predicates.add(criteriaBuilder.equal(root.get("location").get("id"), location));
             }
 
             String salary = params.get("salary");
             if (salary != null && !salary.isEmpty()) {
                 predicates.add(criteriaBuilder.like(root.get("salary"), String.format("%%%s%%", salary)));
             }
-            
-            String employer = params.get("employer");
-            if (employer != null && !employer.isEmpty()) {
-                predicates.add(criteriaBuilder.like(root.get("employer_id").get("company_id").get("name"), String.format("%%%s%%", employer)));
+
+            String comapny = params.get("companyName");
+            if (comapny != null && !comapny.isEmpty()) {
+                predicates.add(criteriaBuilder.like(root.get("employer").get("company").get("nameCompany"), String.format("%%%s%%", comapny)));
+            }
+
+            String tagId = params.get("tagId");
+            if (tagId != null && !tagId.isEmpty()) {
+                Join<RecruitmentNews, RecruitmentTag> recruitmentTagJoin = root.join("recuitmentTagSet", JoinType.INNER);
+                predicates.add(criteriaBuilder.equal(recruitmentTagJoin.get("tag").get("id"), Long.parseLong(tagId)));
             }
 
             criteriaQuery.where(predicates.toArray(new Predicate[0]));
@@ -108,7 +117,6 @@ public class RecruitmentNewsRepositoryImpl implements RecruitmentNewsRepository 
             } else {
                 s.update(r);
             }
-
 
             return true;
         } catch (HibernateException ex) {

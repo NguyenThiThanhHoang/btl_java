@@ -20,7 +20,7 @@
     </div>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
         <div class="container-fluid col-md-11">
-            <a class="navbar-brand" href="#">E-commerce Website</a>
+            <a class="navbar-brand" href="${action}#">E-commerce Website</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -29,17 +29,18 @@
                     <li class="nav-item">
                         <a class="nav-link" href="${action}#">Trang chủ</a>
                     </li>
+
                     <c:choose>
                         <c:when test="${pageContext.request.userPrincipal.name != null}">
+  <%--                           <c:set var="username" value="${fn:substringBefore(pageContext.request.userPrincipal.name, '@')}" /> 
                             <li class="nav-item">
-                                <a class="nav-link text-info" href="<c:url value="/" />">HELLO!</a>
+                                <a class="nav-link text-info" href="<c:url value="/profile" />">${username}</a>
                             </li>
+  --%>
 
-                            <c:set var="username" value="${fn:substringBefore(pageContext.request.userPrincipal.name, '@')}" />
                             <li class="nav-item">
-                                <a class="nav-link text-info" href="<c:url value="/" />">${username}</a>
+                                <a class="nav-link text-info" href="<c:url value="/profile" />">${user.name}</a>
                             </li>
-
                             <c:if test="${pageContext.request.isUserInRole('ROLE_ADMIN')}">
                                 <li class="nav-item">
                                     <a class="nav-link" href="<c:url value="/addUser" />">Thêm người dùng</a>
@@ -54,6 +55,9 @@
                             </li>
                         </c:when>
                         <c:otherwise>
+                            <li class="nav-item">
+                                <a class="nav-link text-info" href="<c:url value="/" />">HELLO!</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="<c:url value="/login" />">Đăng nhập</a>
                             </li>

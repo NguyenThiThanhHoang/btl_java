@@ -152,4 +152,11 @@ public class Rating implements Serializable {
         this.createdDay = createdDay;
     }
 
+    /**
+     * @return the comment
+     */
+    public String getComment() {
+        return comment;
+    }
+
 }

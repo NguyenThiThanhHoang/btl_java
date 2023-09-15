@@ -49,11 +49,11 @@ public class CompanyTagRepositoryImpl implements CompanyTagRepository{
             List<Predicate> predicates = new ArrayList<>();
 
             if (companyId != null && !companyId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("company_id"), "=" + companyId));
+                predicates.add(criteriaBuilder.equal(root.get("company_id"),  companyId));
             }
 
             if (tagId != null && !tagId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("tag_id"), "=" + tagId));
+                predicates.add(criteriaBuilder.equal(root.get("tag_id"),  tagId));
             }
 
             if (!predicates.isEmpty()) {

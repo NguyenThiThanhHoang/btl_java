@@ -48,7 +48,7 @@ public class LocationRepositoryImpl implements LocationRepository{
            
             String kw = params.get("kw");
             if (kw != null && !kw.isEmpty()) {
-                q.where(b.like(root.get("location_name"), String.format("%%%s%%", kw)));
+                q.where(b.like(root.get("name"), String.format("%%%s%%", kw)));
             }
             
         }

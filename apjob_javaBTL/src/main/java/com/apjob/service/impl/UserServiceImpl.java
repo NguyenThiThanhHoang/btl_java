@@ -9,6 +9,7 @@ import com.apjob.pojo.Candidate;
 import com.apjob.pojo.CandidateTag;
 import com.apjob.pojo.Company;
 import com.apjob.pojo.CompanyTag;
+import com.apjob.pojo.CustomUserDetails;
 import com.apjob.pojo.Employer;
 import com.apjob.pojo.Location;
 import com.apjob.pojo.Tag;
@@ -94,6 +95,7 @@ public class UserServiceImpl implements UserService {
         authorities.add(new SimpleGrantedAuthority(u.getUserRole()));
         return new org.springframework.security.core.userdetails.User(
                 u.getEmail(), u.getPassword(), authorities);
+            
     }
 
     @Override

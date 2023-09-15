@@ -52,7 +52,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(AuthenticationManagerBuilder auth)
             throws Exception {
-        auth.userDetailsService(userDetailsService)
+        auth.userDetailsService(userService)
                 .passwordEncoder(passwordEncoder());
     }
 
@@ -73,6 +73,8 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests().antMatchers("/").permitAll();
         http.authorizeRequests().antMatchers("/**/addUser")
+                .access("hasRole('ROLE_ADMIN')");
+        http.authorizeRequests().antMatchers("/**/profile")
                 .access("hasRole('ROLE_ADMIN')");
         http.csrf().disable();
     }

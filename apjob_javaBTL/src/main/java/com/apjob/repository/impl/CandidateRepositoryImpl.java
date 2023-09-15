@@ -5,6 +5,8 @@
 package com.apjob.repository.impl;
 
 import com.apjob.pojo.Candidate;
+import com.apjob.pojo.CandidateTag;
+import com.apjob.pojo.Tag;
 import com.apjob.pojo.User;
 import com.apjob.repository.CandidateRepository;
 import java.util.ArrayList;
@@ -15,6 +17,9 @@ import java.util.regex.Pattern;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.hibernate.HibernateException;
@@ -63,12 +68,14 @@ public class CandidateRepositoryImpl implements CandidateRepository {
             Session session = this.factoryBean.getObject().getCurrentSession();
             CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
             CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
-            Root rEmp = criteriaQuery.from(Candidate.class);
+            Root rCan = criteriaQuery.from(Candidate.class);
             Root rUser = criteriaQuery.from(User.class);
-            criteriaQuery.multiselect(rEmp, rUser);
+            Join<Candidate, CandidateTag> candidateTagJoin = rCan.join("candidateTags", JoinType.LEFT); // Join với CandidateTag
+            Join<CandidateTag, Tag> tagJoin = candidateTagJoin.join("tag", JoinType.LEFT); // Join với Tag
+            criteriaQuery.select(rCan).distinct(true);
 
             List<Predicate> predicates = new ArrayList<>();
-            predicates.add(criteriaBuilder.equal(rEmp.get("id"), rUser.get("id")));
+            predicates.add(criteriaBuilder.equal(rCan.get("id"), rUser.get("id")));
 
             if (email != null && !email.isEmpty()) {
                 predicates.add(criteriaBuilder.like(rUser.get("email"), String.format("%%%s%%", email)));
@@ -78,11 +85,22 @@ public class CandidateRepositoryImpl implements CandidateRepository {
                 predicates.add(criteriaBuilder.like(rUser.get("name"), String.format("%%%s%%", name)));
             }
 
+            String locationId = params.get("locationId");
+            if (locationId != null && !locationId.isEmpty()) {
+                predicates.add(criteriaBuilder.equal(rCan.get("location").get("id"), locationId));
+            }
+
+            String tagName = params.get("tagName");
+            if (tagName != null && !tagName.isEmpty()) {
+                Expression<String> tagNameExpression = tagJoin.get("name");
+                predicates.add(criteriaBuilder.like(tagNameExpression, String.format("%%%s%%", tagName)));
+            }
+
             if (!predicates.isEmpty()) {
                 criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
             }
 
-            criteriaQuery.orderBy(criteriaBuilder.desc(rEmp.get("id")));
+            criteriaQuery.orderBy(criteriaBuilder.desc(rCan.get("id")));
             query = session.createQuery(criteriaQuery);
         } catch (Exception e) {
             e.printStackTrace();

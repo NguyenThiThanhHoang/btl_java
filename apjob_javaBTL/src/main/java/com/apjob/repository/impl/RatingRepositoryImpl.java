@@ -34,7 +34,7 @@ public class RatingRepositoryImpl implements RatingRepository{
     public List<Rating> getRatings(int comapnyId) {
         
         Session s = this.factoryBean.getObject().getCurrentSession();
-        Query q = s.createQuery("From Comment Where company.id=:id");
+        Query q = s.createQuery("From Rating Where company.id=:id");
         q.setParameter("id", comapnyId);
         
         return q.getResultList();

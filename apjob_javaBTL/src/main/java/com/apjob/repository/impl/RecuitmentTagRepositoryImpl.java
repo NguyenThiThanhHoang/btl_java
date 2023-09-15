@@ -48,11 +48,11 @@ public class RecuitmentTagRepositoryImpl implements RecruitmentTagRepository{
             List<Predicate> predicates = new ArrayList<>();
 
             if (recruitmentId != null && !recruitmentId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("recruitment_id"), "=" + recruitmentId));
+                predicates.add(criteriaBuilder.equal(root.get("recruitment_id"),recruitmentId));
             }
 
             if (tagId != null && !tagId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("tag_id"), "=" + tagId));
+                predicates.add(criteriaBuilder.equal(root.get("tag_id"), tagId));
             }
 
             if (!predicates.isEmpty()) {

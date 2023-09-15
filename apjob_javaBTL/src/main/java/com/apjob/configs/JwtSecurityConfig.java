@@ -69,21 +69,26 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests().antMatchers("/api/companys/").permitAll();
         http.authorizeRequests().antMatchers("/api/users/").permitAll();
         http.authorizeRequests().antMatchers("/api/addOrUpdateUser/").permitAll();
-        http.authorizeRequests().antMatchers("/api/recruitmentNews/**").permitAll();
-        http.authorizeRequests().antMatchers("/current-user/").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.GET,"/api/recruitments/**").permitAll();
+        http.authorizeRequests().antMatchers("/api/current-user/").permitAll();
+        http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/**/ratings/").permitAll();
 
         http.authorizeRequests().antMatchers("/api/addOrUpdateRecruitment/").access("hasRole('EMPLOYER')");
         http.authorizeRequests().antMatchers("/api/companyTags/").access("hasRole('EMPLOYER')");
+        http.authorizeRequests().antMatchers("/api/recruitmentNews/{recruitmentId}-cvs/").access("hasRole('EMPLOYER')");
+        http.authorizeRequests().antMatchers("/api/candidates/").access("hasRole('EMPLOYER')");
 
         http.authorizeRequests().antMatchers("/api/candidateTags/").access("hasRole('CANDIDATE')");
         http.authorizeRequests().antMatchers("/api/ratings/").access("hasRole('CANDIDATE')");
         http.authorizeRequests().antMatchers("/api/addCV/").access("hasRole('CANDIDATE')");
+        http.authorizeRequests().antMatchers("/api/cvs/").access("hasRole('CANDIDATE')");
+        http.authorizeRequests().antMatchers("/api/addCVForRecruiment/").access("hasRole('CANDIDATE')");
 
         http.authorizeRequests().antMatchers(HttpMethod.GET, "/api/**/comments/").permitAll();
         http.antMatcher("/api/**").httpBasic().authenticationEntryPoint(restServicesEntryPoint()).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/**").access("hasRole('ADMIN') or hasRole('CANDIDATE') or hasRole('EMPLOYER')")
-                .antMatchers(HttpMethod.POST, "/api/**").access("hasRole('ADMIN') or hasRole('CANDIDATE') or hasRole('EMPLOYER')")
+//                .antMatchers(HttpMethod.GET, "/api/**").access("hasRole('ADMIN') or hasRole('CANDIDATE') or hasRole('EMPLOYER')")
+//                .antMatchers(HttpMethod.POST, "/api/**").access("hasRole('ADMIN') or hasRole('CANDIDATE') or hasRole('EMPLOYER')")
                 .antMatchers(HttpMethod.DELETE, "/api/**").access("hasRole('ADMIN') or hasRole('CANDIDATE') or hasRole('EMPLOYER')").and()
                 .addFilterBefore(jwtAuthenticationTokenFilter(), UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling().accessDeniedHandler((AccessDeniedHandler) customAccessDeniedHandler());

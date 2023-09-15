@@ -13,6 +13,9 @@ import com.apjob.service.UserService;
 import java.util.Map;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -47,7 +51,7 @@ public class UserController {
     public void commonAttr(Model model, @RequestParam Map<String, String> params) {
         model.addAttribute("locations", this.locationService.getLocations(params));
     }
-    
+
     @GetMapping("/login")
     public String login() {
         return "login";
@@ -64,8 +68,8 @@ public class UserController {
             BindingResult rs) {
         if (!rs.hasErrors()) {
             for (ObjectError error : rs.getAllErrors()) {
-            System.out.println("Lỗi: " + error.getDefaultMessage());
-        }
+                System.out.println("Lỗi: " + error.getDefaultMessage());
+            }
             User checkUser = this.userRepo.getUserByEmail(user.getEmail());
             Company checkCoEmail = null;
             Company checkCoTax = null;
@@ -89,4 +93,10 @@ public class UserController {
         return "redirect:/addUser";
     }
 
+    @RequestMapping("/profile")
+    public String getprofile(Model model) {
+        
+        return "profile";
+        
+    }
 }

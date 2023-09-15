@@ -5,17 +5,16 @@
 package com.apjob.service;
 
 import com.apjob.pojo.CV;
+import com.apjob.pojo.CandidateRecruitment;
 import java.util.List;
 import java.util.Map;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
  * @author ASUS
  */
-public interface CVService {
-    List<CV> getCVs();
+public interface CandidateRecruitmentServer {
+    List<CandidateRecruitment> getCandidateRecruitments(int recruitment);
 
-    CV addOrUpdateCV(Map<String, String> params, @RequestPart MultipartFile avatar);
+    CandidateRecruitment addCandidateRecruitment(Map<String, String> params);
 }

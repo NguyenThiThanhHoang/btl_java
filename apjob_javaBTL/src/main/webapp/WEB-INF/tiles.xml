@@ -17,7 +17,7 @@ Click nbfs://nbhost/SystemFileSystem/Templates/XML/XMLDocument.xml to edit this 
         <put-attribute name="content" value="" />
         <put-attribute name="footer"
                        value="/WEB-INF/layout/footer.jsp" />
-        
+      
     </definition>
     <definition name="index" extends="baseLayout">
         <put-attribute name="title" value="Trang chủ" />
@@ -34,6 +34,12 @@ Click nbfs://nbhost/SystemFileSystem/Templates/XML/XMLDocument.xml to edit this 
         <put-attribute name="title" value="Đăng nhập" />
         <put-attribute name="content"
                        value="/WEB-INF/pages/login.jsp" />
+    </definition>
+    
+    <definition name="profile" extends="baseLayout">
+        <put-attribute name="title" value="Thông tin người dùng" />
+        <put-attribute name="content"
+                       value="/WEB-INF/pages/profile.jsp" />
     </definition>
     
 </tiles-definitions>

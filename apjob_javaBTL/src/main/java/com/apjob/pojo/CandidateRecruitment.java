@@ -36,44 +36,44 @@ import org.springframework.web.multipart.MultipartFile;
     @NamedQuery(name = "CandidateRecruitment.findAll", query = "SELECT c FROM CandidateRecruitment c"),
     @NamedQuery(name = "CandidateRecruitment.findByTextMail", query = "SELECT c FROM CandidateRecruitment c WHERE c.textMail = :textMail"),
     @NamedQuery(name = "CandidateRecruitment.findByCreatedDay", query = "SELECT c FROM CandidateRecruitment c WHERE c.createdDay = :createdDay")})
-public class CandidateRecruitment implements Serializable{
-    
+public class CandidateRecruitment implements Serializable {
+
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "candidate_id", referencedColumnName = "id")
     private Candidate candidate;
-   
+
     @Id
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "employer_id", referencedColumnName = "id")
     private Employer employer;
-    
+
     @Id
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "recruitment_id", referencedColumnName = "id")
     private RecruitmentNews recruitment;
-    
+
     @Basic(optional = false)
     @NotNull(message = "{candidateRecruitment.textMail.notNullMsg}")
-    @Size(min = 5, max = 50, message = "{candidateRecruitment.textMail.lenErrMsg}")
+    @Size(min = 5, max = 1000, message = "{candidateRecruitment.textMail.lenErrMsg}")
     @Column(name = "text_mail")
     private String textMail;
-    
+
     @Basic(optional = false)
-    @Column(name = "created_day")
+    @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDay;
-    
-    @Transient
-    private MultipartFile file;
-    
-    public CandidateRecruitment(){
-        
+
+    @Column(name = "link_cv")
+    private String linkCV;
+
+    public CandidateRecruitment() {
+
     }
-    
-    public CandidateRecruitment(Candidate candidate, Employer employer, RecruitmentNews recruitment){
+
+    public CandidateRecruitment(Candidate candidate, Employer employer, RecruitmentNews recruitment) {
         this.candidate = candidate;
         this.employer = employer;
         this.recruitment = recruitment;
@@ -93,7 +93,6 @@ public class CandidateRecruitment implements Serializable{
         this.candidate = candidate;
     }
 
-   
     /**
      * @return the employer
      */
@@ -107,8 +106,6 @@ public class CandidateRecruitment implements Serializable{
     public void setEmployer(Employer employer) {
         this.employer = employer;
     }
-
-   
 
     /**
      * @return the recruitment
@@ -152,20 +149,6 @@ public class CandidateRecruitment implements Serializable{
         this.createdDay = createdDay;
     }
 
-    /**
-     * @return the file
-     */
-    public MultipartFile getFile() {
-        return file;
-    }
-
-    /**
-     * @param file the file to set
-     */
-    public void setFile(MultipartFile file) {
-        this.file = file;
-    }
-    
     @Override
     public int hashCode() {
         return Objects.hash(candidate, employer, recruitment);
@@ -173,19 +156,37 @@ public class CandidateRecruitment implements Serializable{
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
 
         CandidateRecruitment other = (CandidateRecruitment) obj;
-        return Objects.equals(candidate, other.candidate) &&
-               Objects.equals(employer, other.employer) &&
-               Objects.equals(recruitment, other.recruitment);
+        return Objects.equals(candidate, other.candidate)
+                && Objects.equals(employer, other.employer)
+                && Objects.equals(recruitment, other.recruitment);
     }
 
     @Override
     public String toString() {
-        return "com.apjob.pojo.CandidateRecruitment[ candidate=" + candidate 
+        return "com.apjob.pojo.CandidateRecruitment[ candidate=" + candidate
                 + ",  employer=" + employer + ", recruitment=" + recruitment + " ]";
     }
-    
+
+    /**
+     * @return the linkCV
+     */
+    public String getLinkCV() {
+        return linkCV;
+    }
+
+    /**
+     * @param linkCV the linkCV to set
+     */
+    public void setLinkCV(String linkCV) {
+        this.linkCV = linkCV;
+    }
+
 }

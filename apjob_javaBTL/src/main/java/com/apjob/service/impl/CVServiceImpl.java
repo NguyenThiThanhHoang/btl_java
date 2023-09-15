@@ -46,8 +46,10 @@ public class CVServiceImpl implements CVService{
     @Autowired
     private CandidateRepository caRepo;
     @Override
-    public List<CV> getCVs(int candidateId) {
-        return this.cvRepo.getCVs(candidateId);
+    public List<CV> getCVs() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User u = this.userRepo.getUserByEmail(authentication.getName());
+        return this.cvRepo.getCVs(u.getId());
     }
 
     @Override
@@ -59,12 +61,12 @@ public class CVServiceImpl implements CVService{
                 Map res = this.cloudinary.uploader().upload(file.getBytes(),
                         ObjectUtils.asMap("resource_type", "auto"));
                 cv.setLinkCV(res.get("secure_url").toString());
-                cv.setNameCV(file.getName());
+                
             } catch (IOException ex) {
                 Logger.getLogger(UserServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        
+        cv.setNameCV(params.get("nameFile"));
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User u = this.userRepo.getUserByEmail(authentication.getName());
         cv.setCandidate(this.caRepo.getCandidateById(u.getId()));

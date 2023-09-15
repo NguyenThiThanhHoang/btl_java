@@ -49,11 +49,11 @@ public class CandidateTagRepositoryImpl implements CandidateTagRepository{
             List<Predicate> predicates = new ArrayList<>();
 
             if (candidateId != null && !candidateId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("candidate_id"), "=" + candidateId));
+                predicates.add(criteriaBuilder.equal(root.get("candidate_id"),  candidateId));
             }
 
             if (tagId != null && !tagId.isEmpty()) {
-                predicates.add(criteriaBuilder.equal(root.get("tag_id"), "=" + tagId));
+                predicates.add(criteriaBuilder.equal(root.get("tag_id"),  tagId));
             }
 
             if (!predicates.isEmpty()) {
