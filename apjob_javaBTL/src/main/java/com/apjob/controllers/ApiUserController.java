@@ -111,8 +111,9 @@ public class ApiUserController {
         return new ResponseEntity<>(this.userService.getEmployers(params), HttpStatus.OK);
     }
 
-    @GetMapping("/companys/")
-    public ResponseEntity<List<Company>> listCompany(Map<String, String> params) {
+    @RequestMapping(path = "/companys/", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE})
+    public ResponseEntity<List<Company>> listCompany(@RequestParam Map<String, String> params) {
         return new ResponseEntity<>(this.userService.getCompanys(params), HttpStatus.OK);
     }
 

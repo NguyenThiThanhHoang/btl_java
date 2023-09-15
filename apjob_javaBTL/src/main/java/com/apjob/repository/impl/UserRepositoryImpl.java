@@ -109,4 +109,15 @@ public class UserRepositoryImpl implements UserRepository {
         return this.passEncoder.matches(password, u.getPassword());
     }
 
+    @Override
+    public boolean updateActive(int userId) {
+        User u = this.getUserById(userId);
+        if (u != null){
+            u.setActive(Boolean.TRUE);
+            this.addOrUpdateUser(u);
+            return true;
+        }
+        return false;
+    }
+
 }

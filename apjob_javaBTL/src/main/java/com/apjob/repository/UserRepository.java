@@ -22,4 +22,5 @@ public interface UserRepository {
     
     boolean authUser(String username, String password);
 
+    boolean updateActive(int userId);
 }

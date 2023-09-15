@@ -18,4 +18,6 @@ public interface CandidateRepository {
     boolean addOrUpdateCandidate(Candidate c);
     Candidate getCandidateById(int id);
     boolean deleteCandidate(int id);
+    
+
 }

@@ -13,9 +13,18 @@ import java.util.Map;
  * @author ASUS
  */
 public interface EmployerRepository {
+
     List<Employer> getEmployers(Map<String, String> params);
+
     int countEmployers();
+
     boolean addOrUpdateEmployer(Employer e);
+
     Employer getEmployerById(int id);
+
     boolean deleteEmployer(int id);
+
+    List<Employer> getEmployersFalse(Map<String, String> params);
+
+    int countEmployersFalse();
 }

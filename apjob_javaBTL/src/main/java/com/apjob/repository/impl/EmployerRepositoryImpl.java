@@ -65,7 +65,7 @@ public class EmployerRepositoryImpl implements EmployerRepository{
             CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
             Root rEmp = criteriaQuery.from(Employer.class);
             Root rUser = criteriaQuery.from(User.class);
-            criteriaQuery.multiselect(rEmp, rUser);
+            criteriaQuery.select(rEmp).distinct(true);
 
             List<Predicate> predicates = new ArrayList<>();
             predicates.add(criteriaBuilder.equal(rEmp.get("id"), rUser.get("id")));
@@ -143,6 +143,76 @@ public class EmployerRepositoryImpl implements EmployerRepository{
             ex.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public List<Employer> getEmployersFalse(Map<String, String> params) {
+        Query query = null;
+        try {
+            String kw = params.get("kw");
+            String email = null;
+            String name = null;
+            
+            if (kw != null && !kw.isEmpty()) {
+                //dùng regex kiểm tra chuỗi truyền vào có phải email không -> email thì gán -> ngược lại là name
+                String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+                Pattern pattern = Pattern.compile(emailRegex);
+                Matcher matcher = pattern.matcher(kw);
+                if (matcher.matches()) {
+                    email = kw;
+                } else {
+                    name = kw;
+                }
+            }
+            
+            Session session = this.factoryBean.getObject().getCurrentSession();
+            CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+            CriteriaQuery<Object[]> criteriaQuery = criteriaBuilder.createQuery(Object[].class);
+            Root rEmp = criteriaQuery.from(Employer.class);
+            Root rUser = criteriaQuery.from(User.class);
+            criteriaQuery.select(rEmp).distinct(true);
+
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(criteriaBuilder.equal(rEmp.get("id"), rUser.get("id")));
+             predicates.add(criteriaBuilder.equal(rUser.get("active"), 0));
+
+             if (email != null && !email.isEmpty()) {
+                predicates.add(criteriaBuilder.like(rUser.get("email"), String.format("%%%s%%", email)));
+            }
+
+            if (name != null && !name.isEmpty()) {
+                predicates.add(criteriaBuilder.like(rUser.get("name"), String.format("%%%s%%", name)));
+            }
+
+            if (!predicates.isEmpty()) {
+                criteriaQuery.where(criteriaBuilder.and(predicates.toArray(new Predicate[0])));
+            }
+
+            criteriaQuery.orderBy(criteriaBuilder.asc(rUser.get("id")));
+            query = session.createQuery(criteriaQuery);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        if (params != null) {
+            String page = params.get("page");
+            if (page != null) {
+                int pageSize = Integer.parseInt(this.env.getProperty("PAGE_SIZE_LARGE_ITEM"));
+                query.setFirstResult((Integer.parseInt(page) - 1) * pageSize);
+                query.setMaxResults(pageSize);
+            }
+        }
+        
+        return query.getResultList();
+    }
+
+    @Override
+    public int countEmployersFalse() {
+        Session s = this.factoryBean.getObject().getCurrentSession();
+        Query q = s.createQuery("SELECT COUNT(*) FROM Employer WHERE user.active=:status");
+        q.setParameter("status", false);
+
+        return Integer.parseInt(q.getSingleResult().toString());
     }
     
 }

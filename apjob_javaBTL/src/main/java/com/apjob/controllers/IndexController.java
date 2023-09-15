@@ -10,6 +10,7 @@ import com.apjob.service.UserService;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,7 +18,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -35,6 +38,9 @@ public class IndexController {
     @Autowired
     private LocationService locationService;
 
+    @Autowired
+    private Environment env;
+
     @ModelAttribute
     public void commonAttr(Model model, @RequestParam Map<String, String> params) {
         model.addAttribute("locations", this.locationService.getLocations(params));
@@ -50,10 +56,22 @@ public class IndexController {
     }
 
     @RequestMapping("/")
-    public String index(Model model, @RequestParam Map<String, String> params
-    ) {
-        model.addAttribute("candidates", this.userService.getCandidates(params));
+    public String index(Model model, @RequestParam Map<String, String> params) {
+        model.addAttribute("employers", this.userService.getEmployersFalse(params));
+
+        int pageSize = Integer.parseInt(this.env.getProperty("PAGE_SIZE_SMALL_ITEM"));
+        long count = this.userService.countEmployersFalse();
+        model.addAttribute("counter", Math.ceil(count * 1.0 / pageSize));
 
         return "index";
+    }
+    
+    @PostMapping("/")
+    public String approveApplication(@RequestParam("employerId") int employerId){
+        boolean result = this.userService.updateActive(employerId);
+        if (!result){
+            return "index";
+        }
+        return "redirect:/";
     }
 }

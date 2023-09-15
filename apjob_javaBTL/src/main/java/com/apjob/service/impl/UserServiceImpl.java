@@ -4,12 +4,10 @@
  */
 package com.apjob.service.impl;
 
-import com.apjob.formatters.LocationFormatter;
 import com.apjob.pojo.Candidate;
 import com.apjob.pojo.CandidateTag;
 import com.apjob.pojo.Company;
 import com.apjob.pojo.CompanyTag;
-import com.apjob.pojo.CustomUserDetails;
 import com.apjob.pojo.Employer;
 import com.apjob.pojo.Location;
 import com.apjob.pojo.Tag;
@@ -382,6 +380,21 @@ public class UserServiceImpl implements UserService {
         }
 
         return companyTags;
+    }
+
+    @Override
+    public List<Employer> getEmployersFalse(Map<String, String> params) {
+        return this.emRepo.getEmployersFalse(params);
+    }
+
+    @Override
+    public int countEmployersFalse() {
+        return this.emRepo.countEmployersFalse();
+    }
+
+    @Override
+    public boolean updateActive(int userId) {
+        return this.userRepo.updateActive(userId);
     }
 
 }

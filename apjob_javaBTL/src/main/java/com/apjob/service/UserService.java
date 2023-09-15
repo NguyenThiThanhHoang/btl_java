@@ -43,4 +43,8 @@ public interface UserService extends UserDetailsService{
     
     List<CompanyTag> addCompanyTags(Map<String, String> params);
     
+    
+    List<Employer> getEmployersFalse(Map<String, String> params);
+    int countEmployersFalse();
+    boolean updateActive (int userId);
 }
