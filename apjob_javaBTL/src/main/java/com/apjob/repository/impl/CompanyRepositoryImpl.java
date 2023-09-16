@@ -117,16 +117,43 @@ public class CompanyRepositoryImpl implements CompanyRepository{
             return false;
         }
     }
+   
 
     @Override
     public Company getCompanyByEmail(String email) {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        return s.get(Company.class, email);
+        org.hibernate.query.Query q = s.createQuery("FROM Company WHERE email=:email");
+        q.setParameter("email", email);
+
+        List<Company> companys = q.getResultList();
+        Company c = new Company();
+
+        // Kiểm tra xem có người dùng nào có địa chỉ email tương ứng hay không
+        if (companys.size() <= 0) {
+            return c; // null nếu không tìm thấy
+        } else {
+            c = companys.get(0);
+            return c;
+        }
+        
     }
 
     @Override
     public Company getCompanyByTax(int tax) {
         Session s = this.factoryBean.getObject().getCurrentSession();
-        return s.get(Company.class, tax);
+        org.hibernate.query.Query q = s.createQuery("FROM Company WHERE tax=:tax");
+        q.setParameter("tax", tax);
+
+        List<Company> companys = q.getResultList();
+        Company c = new Company();
+
+        // Kiểm tra xem có người dùng nào có địa chỉ email tương ứng hay không
+        if (companys.size() <= 0) {
+            return c; // null nếu không tìm thấy
+        } else {
+            c = companys.get(0);
+            return c;
+        }
+      
     }
 }

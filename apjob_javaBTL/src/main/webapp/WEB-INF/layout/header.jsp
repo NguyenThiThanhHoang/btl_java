@@ -13,9 +13,9 @@
     <div class="mini-menu col-md-1">
         <button class="toggle-button" id="toggle-button">☰</button>
         <ul class="menu-list" id="menu-list">
-            <li><a href="#">Mục 1</a></li>
-            <li><a href="#">Mục 2</a></li>
-            <li><a href="#">Mục 3</a></li>
+            <li><a href="<c:url value="/stats" />">Thêm người dùng</a></li>
+            <li><a href="<c:url value="/stats" />">Báo cáo</a></li>
+            <li><a href="<c:url value="/logout" />">Đăng xuất</a></li>
         </ul>
     </div>
     <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
